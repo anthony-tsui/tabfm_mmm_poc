@@ -8,7 +8,8 @@
 → **No.** See the worked example:
 
 👉 **[`docs/examples_for_planners.md`](docs/examples_for_planners.md)**  
-👉 Images: [`examples/01_meridian_annual_mix_story.png`](examples/01_meridian_annual_mix_story.png) · [`examples/02_tabfm_kpi_stops_here.png`](examples/02_tabfm_kpi_stops_here.png)
+👉 Images: [`examples/01_meridian_annual_mix_story.png`](examples/01_meridian_annual_mix_story.png) · [`examples/02_tabfm_kpi_stops_here.png`](examples/02_tabfm_kpi_stops_here.png)  
+👉 Curiosity only (same holdout KPI overlay): [`examples/03_curiosity_kpi_overlay.png`](examples/03_curiosity_kpi_overlay.png)
 
 On this simulated run: **Cut Channel3 15% / scale Channel2 — lowest ROI (~53) vs highest (~104). That’s an annual-mix call.**  
 **Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.**

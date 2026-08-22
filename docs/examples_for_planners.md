@@ -2,14 +2,17 @@
 
 **Short answer: No.** TabFM can forecast KPI. Meridian can recommend a mix.
 
-Open these two images on your phone (same simulated Meridian demo data):
+Open these images on your phone (same simulated Meridian demo data):
 
 1. [Meridian annual mix story](../examples/01_meridian_annual_mix_story.png)  
-2. [TabFM KPI + planner stops here](../examples/02_tabfm_kpi_stops_here.png)
+2. [TabFM KPI + planner stops here](../examples/02_tabfm_kpi_stops_here.png)  
+3. *(Curiosity only)* [Actual vs Meridian vs TabFM KPI overlay](../examples/03_curiosity_kpi_overlay.png) — same holdout 2023-01-23 → 2024-01-15
 
 Optional scroll strip: [one planner story](../examples/00_one_planner_story.png)
 
 > Simulated / demo data only — not real campaigns. Tiny MCMC = directional, not decision-grade.
+>
+> **Similar KPI fit ≠ same model for annual mix. Overlay is curiosity only.** It does not change the annual-mix success bar.
 
 ---
 
