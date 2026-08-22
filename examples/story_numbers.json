@@ -18,7 +18,7 @@
     "roi_scale": 104.31567494869232,
     "delta_incremental": 677002332.8280754,
     "caption_meridian": "Cut Channel3 15% / scale Channel2 \u2014 lowest ROI (~53) vs highest (~104). That\u2019s an annual-mix call.",
-    "caption_tabfm": "Same data: KPI forecast only. No contribution, ROI, or cut/scale \u2014 planner stops here.",
+    "caption_tabfm": "KPI forecast only \u2014 planner stops here.",
     "roi": {
       "Channel0": 64.34853790998459,
       "Channel1": 87.25149550437928,

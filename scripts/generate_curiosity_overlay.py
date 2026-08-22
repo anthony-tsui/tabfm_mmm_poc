@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
+from matplotlib.gridspec import GridSpec
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -62,7 +63,10 @@ def main() -> int:
         }
     )
 
-    fig, ax = plt.subplots(figsize=(8.4, 6.8))
+    fig = plt.figure(figsize=(8.4, 8.2))
+    gs = GridSpec(3, 1, figure=fig, height_ratios=[3.2, 1.0, 0.7], hspace=0.35)
+
+    ax = fig.add_subplot(gs[0])
     ax.plot(dates, y_act / 1e6, color="#24292f", lw=2.0, marker="o", ms=3.5, label="Actual KPI")
     ax.plot(dates, y_mer / 1e6, color="#1f6feb", lw=2.0, marker="^", ms=3.5, label="Meridian holdout forecast")
     ax.plot(dates, y_tab / 1e6, color="#bf3989", lw=2.0, marker="s", ms=3.5, label="TabFM holdout forecast")
@@ -71,44 +75,52 @@ def main() -> int:
     ax.set_title(
         f"Curiosity overlay — same holdout\n{holdout_times[0]} → {holdout_times[-1]} (52 weeks)",
         loc="left",
-        fontsize=14,
+        fontsize=13,
         fontweight="bold",
+        pad=10,
     )
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m"))
-    fig.autofmt_xdate(rotation=25, ha="right")
-    ax.legend(loc="upper left", fontsize=10)
+    for label in ax.get_xticklabels():
+        label.set_rotation(25)
+        label.set_ha("right")
+    ax.legend(loc="upper left", fontsize=9, framealpha=0.95)
 
-    # Multi-metric card (not R²-only)
+    # Metrics card in its own panel — never over the series
+    ax_m = fig.add_subplot(gs[1])
+    ax_m.axis("off")
     card = (
         "Fair OOS metrics (from results/metrics.json)\n"
-        f"{'':8} {'RMSE':>10} {'MAE':>10} {'MAPE%':>8} {'R²':>7}\n"
-        f"{'Meridian':8} {mm['rmse']/1e6:10.2f}M {mm['mae']/1e6:10.2f}M {mm['mape_pct']:8.2f} {mm['r2']:7.3f}\n"
-        f"{'TabFM':8} {tm['rmse']/1e6:10.2f}M {tm['mae']/1e6:10.2f}M {tm['mape_pct']:8.2f} {tm['r2']:7.3f}"
+        f"{'':10} {'RMSE':>10} {'MAE':>10} {'MAPE%':>8} {'R²':>7}\n"
+        f"{'Meridian':10} {mm['rmse']/1e6:10.2f}M {mm['mae']/1e6:10.2f}M {mm['mape_pct']:8.2f} {mm['r2']:7.3f}\n"
+        f"{'TabFM':10} {tm['rmse']/1e6:10.2f}M {tm['mae']/1e6:10.2f}M {tm['mape_pct']:8.2f} {tm['r2']:7.3f}"
     )
-    ax.text(
-        0.98,
-        0.02,
+    ax_m.text(
+        0.5,
+        0.5,
         card,
-        transform=ax.transAxes,
-        ha="right",
-        va="bottom",
-        fontsize=9,
+        ha="center",
+        va="center",
+        fontsize=10,
         family="monospace",
-        bbox=dict(boxstyle="round,pad=0.45", facecolor="#f6f8fa", edgecolor="#d0d7de"),
+        bbox=dict(boxstyle="round,pad=0.55", facecolor="#f6f8fa", edgecolor="#d0d7de"),
     )
 
-    fig.text(
-        0.02,
-        0.01,
+    ax_c = fig.add_subplot(gs[2])
+    ax_c.axis("off")
+    ax_c.text(
+        0.0,
+        0.85,
         f"{CAPTION}\n"
         f"Does not change the annual-mix bar — TabFM still has no cut/scale / ROI / contribution.\n"
         f"{DISCLAIMER}.",
         fontsize=10,
         color="#24292f",
-        va="bottom",
+        va="top",
+        ha="left",
     )
-    fig.tight_layout(rect=[0, 0.11, 1, 1])
+
+    fig.subplots_adjust(top=0.92, bottom=0.04, left=0.12, right=0.96)
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "03_curiosity_kpi_overlay.png"
     fig.savefig(path, facecolor="white")

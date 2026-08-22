@@ -12,7 +12,7 @@
 👉 Curiosity only (same holdout KPI overlay): [`examples/03_curiosity_kpi_overlay.png`](examples/03_curiosity_kpi_overlay.png)
 
 On this simulated run: **Cut Channel3 15% / scale Channel2 — lowest ROI (~53) vs highest (~104). That’s an annual-mix call.**  
-**Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.**
+**KPI forecast only — planner stops here.**
 
 Decisioning checklist: [`docs/decisioning_checklist.md`](docs/decisioning_checklist.md)
 
