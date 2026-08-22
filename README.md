@@ -107,6 +107,10 @@ requirements.txt
    predictions (approximate).
 3. Meridian-style contributions use `coef × transformed media` on holdout.
 4. Full Meridian, when used, runs tiny chains suitable only for PoC smoke tests.
+5. When real Meridian succeeds, holdout KPI metrics use in-sample
+   `expected_outcome` on later weeks (model sees the full national series).
+   TabFM remains true OOS ICL. The Meridian-style Ridge proxy is always
+   train/holdout-split for a fairer predictive baseline.
 
 ## What is / is not claimed
 

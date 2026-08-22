@@ -10,6 +10,7 @@ tqdm>=4.66,<5
 # Hugging Face (TabFM weight download)
 huggingface_hub>=0.24,<1
 hf_transfer>=0.1,<1
+safetensors>=0.4,<1
 
 # PyTorch CPU wheel — install from pytorch index if needed:
 #   pip install torch --index-url https://download.pytorch.org/whl/cpu

@@ -47,108 +47,102 @@
     ],
     "has_contribution_ground_truth": true
   },
-  "dry_run": true,
+  "dry_run": false,
   "models": {
     "tabfm": {
       "name": "TabFM",
-      "mode": "mock",
+      "mode": "tabfm",
       "y_pred_test": [
-        917177.8693898702,
-        944185.9011250493,
-        977800.7143922225,
-        888016.3425119756
+        930279.375,
+        966252.0,
+        924796.625,
+        945555.6875
       ],
       "metrics": {
-        "rmse": 90347.86969327887,
-        "mae": 77166.92064522061,
-        "r2": -27.20333161398104,
-        "mape_pct": 7.581610363626441
+        "rmse": 71892.34990465424,
+        "mae": 67241.205625,
+        "r2": -16.857881590831383,
+        "mape_pct": 6.63339048115599
       },
       "contribution_pred": {
         "google_sem": 0.0,
-        "bing_sem": 149313.74393414892,
-        "meta": 321134.3922675712,
+        "bing_sem": 6499.40625,
+        "meta": 20593.375,
         "youtube": 0.0,
-        "dv360": 139486.5558546872,
+        "dv360": 0.0,
         "ooh": 0.0
       },
       "contribution_metrics": {
-        "contrib_mae": 129207.75534273453,
-        "contrib_share_mae": 0.2148102259882331,
-        "contrib_corr": -0.24024566064049613,
-        "contrib_share_corr": -0.2402456606404962
+        "contrib_mae": 90865.84229166666,
+        "contrib_share_mae": 0.2411227720167539,
+        "contrib_corr": 0.006408235577167798,
+        "contrib_share_corr": 0.006408235577167798
       },
       "extras": {
-        "note": "Dry-run mock (Ridge). TabFM weights not used."
+        "backend": "pytorch",
+        "weights": "google/tabfm-1.0.0-pytorch"
       }
     },
     "meridian": {
-      "name": "Meridian-style baseline",
-      "mode": "meridian_style",
+      "name": "Meridian",
+      "mode": "meridian",
       "y_pred_test": [
-        1021242.7146608958,
-        992772.22449213,
-        984595.6395833453,
-        1032264.9098017325
+        1042152.1425,
+        1008444.5975,
+        985116.055,
+        1017504.8775
       ],
       "metrics": {
-        "rmse": 11587.049942059746,
-        "mae": 10217.82526634037,
-        "r2": 0.5361149910836476,
-        "mape_pct": 1.0064692353940068
+        "rmse": 7063.549878517959,
+        "mae": 6453.228124999994,
+        "r2": 0.8276105783326779,
+        "mape_pct": 0.6391112874376506
       },
       "contribution_pred": {
-        "google_sem": 9448.55279420064,
-        "bing_sem": 13807.664530999948,
-        "meta": 14226.168380900152,
-        "youtube": 8986.776269662769,
-        "dv360": 7308.35742336977,
-        "ooh": 5417.8626923921565
+        "google_sem": 680256.5233333333,
+        "bing_sem": 204291.67125,
+        "meta": 370081.13249999995,
+        "youtube": 251046.10875,
+        "dv360": 165913.02375,
+        "ooh": 287293.88375
       },
       "contribution_metrics": {
-        "contrib_mae": 85515.40881807909,
-        "contrib_share_mae": 0.08347470366661384,
-        "contrib_corr": 0.02771970077080289,
-        "contrib_share_corr": 0.027719700770802914
+        "contrib_mae": 231099.0847222222,
+        "contrib_share_mae": 0.009891798344853863,
+        "contrib_corr": 0.99373117948518,
+        "contrib_share_corr": 0.99373117948518
       },
       "extras": {
-        "note": "Proxy: geometric adstock + Hill saturation + Ridge. Not full Google Meridian Bayesian MCMC.",
-        "media_cols": [
-          "google_sem_media_transform",
-          "bing_sem_media_transform",
-          "meta_media_transform",
-          "youtube_media_transform",
-          "dv360_media_transform",
-          "ooh_media_transform"
-        ],
-        "dry_run": true
+        "n_keep": 50,
+        "n_chains": 1,
+        "note": "Minimal Meridian MCMC on full national series; holdout KPI uses in-sample expected_outcome on later weeks (not pure OOS)."
       }
     }
   },
   "metrics_table": [
     {
       "model": "TabFM",
-      "mode": "mock",
-      "kpi_rmse": 90347.86969327887,
-      "kpi_mae": 77166.92064522061,
-      "kpi_r2": -27.20333161398104,
-      "kpi_mape_pct": 7.581610363626441,
-      "recovery_contrib_mae": 129207.75534273453,
-      "recovery_contrib_share_mae": 0.2148102259882331,
-      "recovery_contrib_corr": -0.24024566064049613,
-      "recovery_contrib_share_corr": -0.2402456606404962
+      "mode": "tabfm",
+      "kpi_rmse": 71892.34990465424,
+      "kpi_mae": 67241.205625,
+      "kpi_r2": -16.857881590831383,
+      "kpi_mape_pct": 6.63339048115599,
+      "recovery_contrib_mae": 90865.84229166666,
+      "recovery_contrib_share_mae": 0.2411227720167539,
+      "recovery_contrib_corr": 0.006408235577167798,
+      "recovery_contrib_share_corr": 0.006408235577167798
     },
     {
-      "model": "Meridian-style baseline",
-      "mode": "meridian_style",
-      "kpi_rmse": 11587.049942059746,
-      "kpi_mae": 10217.82526634037,
-      "kpi_r2": 0.5361149910836476,
-      "kpi_mape_pct": 1.0064692353940068,
-      "recovery_contrib_mae": 85515.40881807909,
-      "recovery_contrib_share_mae": 0.08347470366661384,
-      "recovery_contrib_corr": 0.02771970077080289,
-      "recovery_contrib_share_corr": 0.027719700770802914
+      "model": "Meridian",
+      "mode": "meridian",
+      "kpi_rmse": 7063.549878517959,
+      "kpi_mae": 6453.228124999994,
+      "kpi_r2": 0.8276105783326779,
+      "kpi_mape_pct": 0.6391112874376506,
+      "recovery_contrib_mae": 231099.0847222222,
+      "recovery_contrib_share_mae": 0.009891798344853863,
+      "recovery_contrib_corr": 0.99373117948518,
+      "recovery_contrib_share_corr": 0.99373117948518
     }
   ]
 }

@@ -15,6 +15,7 @@ fi
 python3 -m pip install -e "vendor/tabfm[pytorch]" || {
   echo "WARN: TabFM editable install failed; dry-run mock path remains available."
 }
+python3 -m pip install -q safetensors || true
 
 # Optional Meridian (may pull tensorflow / jax stack)
 if [[ "${INSTALL_MERIDIAN:-0}" == "1" ]]; then
