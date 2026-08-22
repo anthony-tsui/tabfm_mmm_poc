@@ -22,4 +22,6 @@ Official Meridian **simulated/demo** data only — not real campaign numbers. Ti
 - **TabFM** stops at “what might KPI be?” — useful signal, not a media plan.
 - Meridian-as-teacher distillation into TabFM: **out of scope** (Someday).
 
+**See the pictures:** [`examples_for_planners.md`](examples_for_planners.md)
+
 → Full gap matrix: [`../results/deliverables_matrix.md`](../results/deliverables_matrix.md)
