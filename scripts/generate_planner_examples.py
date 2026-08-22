@@ -119,9 +119,7 @@ def _build_story(data, contrib: dict[str, float], roi: dict[str, float], cut_pct
             f"lowest ROI (~{roi[cut_ch]:.0f}) vs highest (~{roi[scale_ch]:.0f}). "
             f"That’s an annual-mix call."
         ),
-        "caption_tabfm": (
-            "Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here."
-        ),
+        "caption_tabfm": "KPI forecast only — planner stops here.",
     }
     return story
 
@@ -135,46 +133,57 @@ def plot_meridian_story(story: dict) -> None:
     before = np.array([story["spend_before"][c] for c in channels], dtype=float)
     after = np.array([story["spend_after"][c] for c in channels], dtype=float)
 
-    fig = plt.figure(figsize=(8.2, 11.0))
-    gs = GridSpec(3, 1, figure=fig, height_ratios=[1.0, 1.0, 1.15], hspace=0.45)
+    fig = plt.figure(figsize=(8.2, 13.0))
+    # Charts + legend strip + caption — caption never shares space with x-ticks
+    gs = GridSpec(5, 1, figure=fig, height_ratios=[1.0, 1.0, 1.15, 0.32, 0.7], hspace=0.45)
 
     fig.suptitle(
         "Planner story — Meridian on simulated data\n"
         "Annual mix: what to cut vs scale",
-        fontsize=16,
+        fontsize=15,
         fontweight="bold",
         y=0.98,
     )
 
-    # 1) Contribution
     ax0 = fig.add_subplot(gs[0])
     colors = ["#cf222e" if c == cut_ch else "#2da44e" if c == scale_ch else "#6e7781" for c in channels]
     ax0.barh(channels[::-1], (contrib / 1e9)[::-1], color=colors[::-1])
     ax0.set_xlabel("Channel contribution (billions, simulated)")
-    ax0.set_title("1. What drove the outcome?  (Meridian incremental contribution)", loc="left")
+    ax0.set_title("1. What drove the outcome?  (Meridian incremental contribution)", loc="left", pad=8)
 
-    # 2) ROI
     ax1 = fig.add_subplot(gs[1])
     ax1.bar(channels, roi_vals, color=colors)
     ax1.set_ylabel("ROI (simulated)")
-    ax1.set_title("2. Which channels are efficient?  (Meridian ROI)", loc="left")
+    ax1.set_title("2. Which channels are efficient?  (Meridian ROI)", loc="left", pad=8)
     ax1.tick_params(axis="x", rotation=20)
 
-    # 3) Cut / scale recommendation
     ax2 = fig.add_subplot(gs[2])
     x = np.arange(len(channels))
     w = 0.36
-    ax2.bar(x - w / 2, before / 1e6, width=w, label="Before", color="#8c959f")
-    ax2.bar(x + w / 2, after / 1e6, width=w, label="After scenario", color="#1f6feb")
+    bars_before = ax2.bar(x - w / 2, before / 1e6, width=w, label="Before", color="#8c959f")
+    bars_after = ax2.bar(x + w / 2, after / 1e6, width=w, label="After scenario", color="#1f6feb")
     ax2.set_xticks(x)
     ax2.set_xticklabels(channels, rotation=20)
     ax2.set_ylabel("Spend (millions, simulated)")
     ax2.set_title(
         f"3. Sample annual mix rec: cut {cut_ch} {story['cut_pct']:.0%} → scale {scale_ch}",
         loc="left",
+        pad=8,
     )
-    ax2.legend(fontsize=10)
 
+    ax_leg = fig.add_subplot(gs[3])
+    ax_leg.axis("off")
+    ax_leg.legend(
+        [bars_before, bars_after],
+        ["Before", "After scenario"],
+        loc="center",
+        ncol=2,
+        fontsize=10,
+        frameon=False,
+    )
+
+    ax_cap = fig.add_subplot(gs[4])
+    ax_cap.axis("off")
     move_m = story["move_spend"] / 1e6
     delta_b = story["delta_incremental"] / 1e9
     caption = (
@@ -185,92 +194,114 @@ def plot_meridian_story(story: dict) -> None:
         f"{'+' if delta_b >= 0 else ''}{delta_b:.2f}B via ROI×spend scenario — not full optimizer.)\n"
         f"{DISCLAIMER}. {MCMC_NOTE}."
     )
-    fig.text(0.02, 0.01, caption, fontsize=10, color="#24292f", va="bottom")
-    fig.tight_layout(rect=[0, 0.12, 1, 0.95])
+    ax_cap.text(0.0, 0.9, caption, fontsize=10, color="#24292f", va="top", ha="left", wrap=True)
+    fig.subplots_adjust(top=0.92, bottom=0.04, left=0.12, right=0.96)
     _save(fig, "01_meridian_annual_mix_story.png")
 
 
 def plot_tabfm_story(data, y_pred: np.ndarray) -> None:
-    """KPI forecast + explicit stops-here panel — one story image."""
+    """KPI forecast + explicit stops-here panel — clear margins, no overlapping labels."""
     y_true = data.y_test.to_numpy(dtype=float)
     n = min(len(y_true), len(y_pred), 52)
 
-    fig = plt.figure(figsize=(8.2, 9.0))
-    gs = GridSpec(2, 1, figure=fig, height_ratios=[1.35, 1.0], hspace=0.35)
+    fig = plt.figure(figsize=(8.2, 10.0))
+    # Chart | legend strip | stop box | caption — each owns its row (no shared space)
+    gs = GridSpec(4, 1, figure=fig, height_ratios=[3.0, 0.38, 2.4, 0.55], hspace=0.28)
+
     fig.suptitle(
         "Same planner question — TabFM on the same simulated data",
-        fontsize=15,
+        fontsize=14,
         fontweight="bold",
-        y=0.98,
+        y=0.985,
     )
 
     ax0 = fig.add_subplot(gs[0])
-    ax0.plot(range(n), y_true[:n] / 1e6, marker="o", ms=4, label="Actual holdout KPI", color="#24292f")
-    ax0.plot(range(n), y_pred[:n] / 1e6, marker="s", ms=4, label="TabFM predicted KPI", color="#bf3989")
+    (ln0,) = ax0.plot(
+        range(n), y_true[:n] / 1e6, marker="o", ms=3.5, label="Actual holdout KPI", color="#24292f"
+    )
+    (ln1,) = ax0.plot(
+        range(n), y_pred[:n] / 1e6, marker="s", ms=3.5, label="TabFM predicted KPI", color="#bf3989"
+    )
     ax0.set_xlabel("Holdout week")
     ax0.set_ylabel("KPI (millions, simulated)")
-    ax0.set_title("Same data: KPI forecast only", loc="left")
-    ax0.legend(fontsize=10)
+    ax0.set_title("Holdout KPI: actual vs TabFM", loc="left", pad=10)
+    ax0.set_ylim(
+        min(y_true[:n].min(), y_pred[:n].min()) / 1e6 * 0.98,
+        max(y_true[:n].max(), y_pred[:n].max()) / 1e6 * 1.04,
+    )
 
-    ax1 = fig.add_subplot(gs[1])
+    ax_leg = fig.add_subplot(gs[1])
+    ax_leg.axis("off")
+    ax_leg.legend(
+        [ln0, ln1],
+        ["Actual holdout KPI", "TabFM predicted KPI"],
+        loc="center",
+        ncol=2,
+        fontsize=10,
+        frameon=False,
+    )
+
+    ax1 = fig.add_subplot(gs[2])
     ax1.set_xlim(0, 10)
     ax1.set_ylim(0, 10)
     ax1.axis("off")
-    ax1.add_patch(plt.Rectangle((0.3, 0.5), 9.4, 9.0, fill=True, color="#fff5f5", ec="#cf222e", lw=2.5))
-    ax1.text(5, 8.2, "Planner stops here", ha="center", fontsize=20, fontweight="bold", color="#cf222e")
+    ax1.add_patch(
+        plt.Rectangle(
+            (0.35, 0.4), 9.3, 9.2, fill=True, color="#fff5f5", ec="#cf222e", lw=2.5, clip_on=False
+        )
+    )
+    ax1.text(
+        5, 8.2, "Planner stops here", ha="center", va="center", fontsize=17, fontweight="bold", color="#cf222e"
+    )
     ax1.text(
         5,
         5.5,
-        "No contribution\n"
-        "No ROI\n"
-        "No cut / scale\n"
-        "No annual mix or strategy plan",
+        "No contribution   ·   No ROI\nNo cut / scale   ·   No annual mix plan",
         ha="center",
-        fontsize=13,
+        va="center",
+        fontsize=12,
         color="#24292f",
+        linespacing=1.75,
     )
     ax1.text(
         5,
-        1.8,
-        "Needs Meridian (or another MMM) for annual\nmarketing budget & strategy recommendations.",
+        2.0,
+        "Needs Meridian (or another MMM) for annual\nbudget & strategy recommendations.",
         ha="center",
+        va="center",
         fontsize=11,
         color="#57606a",
+        linespacing=1.45,
     )
 
-    fig.text(
-        0.02,
-        0.01,
-        f"Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.\n"
-        f"{DISCLAIMER}.",
-        fontsize=10,
+    ax_cap = fig.add_subplot(gs[3])
+    ax_cap.axis("off")
+    ax_cap.text(
+        0.0,
+        0.75,
+        f"KPI forecast only — planner stops here.\n{DISCLAIMER}.",
+        fontsize=11,
         color="#24292f",
-        va="bottom",
+        va="top",
+        ha="left",
     )
-    fig.tight_layout(rect=[0, 0.08, 1, 0.95])
+    fig.subplots_adjust(top=0.93, bottom=0.04, left=0.12, right=0.96)
     _save(fig, "02_tabfm_kpi_stops_here.png")
 
 
 def plot_story_strip() -> None:
-    """Optional third image: two-panel strip for a quick scroll."""
+    """Composite strip: stack Meridian + TabFM panels (source images already captioned)."""
     p1, p2 = OUT / "01_meridian_annual_mix_story.png", OUT / "02_tabfm_kpi_stops_here.png"
     if not (p1.exists() and p2.exists()):
         return
-    fig, axes = plt.subplots(2, 1, figsize=(8.2, 14.5))
-    for ax, path, title in zip(
-        axes,
-        (p1, p2),
-        (
-            "Cut Channel3 15% / scale Channel2 — lowest ROI (~53) vs highest (~104). That’s an annual-mix call.",
-            "Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.",
-        ),
-    ):
+    # Avoid stacking duplicate titles/captions on top of the source PNGs —
+    # those already include story text with clear margins.
+    fig, axes = plt.subplots(2, 1, figsize=(8.2, 16.0))
+    for ax, path in zip(axes, (p1, p2)):
         ax.imshow(plt.imread(path))
-        ax.set_title(title, loc="left", fontsize=13)
         ax.axis("off")
-    fig.suptitle("One planner story — Meridian vs TabFM", fontsize=15, fontweight="bold")
-    fig.text(0.02, 0.005, DISCLAIMER, fontsize=9, color="#444")
-    fig.tight_layout(rect=[0, 0.02, 1, 0.97])
+    fig.suptitle("One planner story — Meridian vs TabFM", fontsize=14, fontweight="bold", y=0.995)
+    fig.subplots_adjust(top=0.97, bottom=0.01, left=0.02, right=0.98, hspace=0.06)
     _save(fig, "00_one_planner_story.png")
 
 
@@ -279,13 +310,23 @@ def main() -> int:
     data = load_mmm_dataset(dataset="national", max_context_rows=100)
     logger.info("Frozen slice: %s | channels=%s", data.source_path, data.channel_keys)
 
-    from mmm_compare.tabfm_runner import run_tabfm
-
-    tabfm = run_tabfm(data, dry_run=False)
-    plot_tabfm_story(data, tabfm.y_pred_test)
-
     saved = OUT / "story_numbers.json"
+    metrics_path = ROOT / "results" / "metrics.json"
     use_saved = "--from-saved" in sys.argv and saved.exists()
+
+    if use_saved and metrics_path.exists():
+        y_pred = np.asarray(
+            json.loads(metrics_path.read_text())["models"]["tabfm"]["y_pred_test"],
+            dtype=float,
+        )
+        logger.info("TabFM preds from %s (no TabFM reload)", metrics_path)
+    else:
+        from mmm_compare.tabfm_runner import run_tabfm
+
+        tabfm = run_tabfm(data, dry_run=False)
+        y_pred = tabfm.y_pred_test
+    plot_tabfm_story(data, y_pred)
+
     if use_saved:
         prev = json.loads(saved.read_text())
         contrib = prev["story"]["contrib"]

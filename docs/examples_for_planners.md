@@ -37,7 +37,7 @@ This is a **labeled scenario** using Meridian ROI on official demo data — not 
 
 ### TabFM’s example answer (same data)
 
-**Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.**
+**KPI forecast only — planner stops here.**
 
 TabFM draws a holdout KPI line (actual vs predicted). That is all.
 
