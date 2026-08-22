@@ -1,0 +1,31 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.ipynb_checkpoints/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Secrets / local env
+.env
+.hf_token
+*.pem
+
+# Vendor clones (re-clone via scripts/install_deps.sh)
+vendor/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Large local artifacts (committed small results/metrics.* are OK)
+artifacts/
+*.pt
+*.ckpt

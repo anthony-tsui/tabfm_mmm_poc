@@ -1,0 +1,154 @@
+{
+  "disclaimer": "All values are synthetic/dummy. Metrics do not estimate real campaign performance.",
+  "data": {
+    "path": "/workspace/data/hk_skincare_mmm_dummy.csv",
+    "n_rows": 12,
+    "kpi": "revenue",
+    "train_idx": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "test_idx": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "feature_cols": [
+      "google_sem_spend",
+      "google_sem_impression",
+      "bing_sem_spend",
+      "bing_sem_impression",
+      "meta_spend",
+      "meta_impression",
+      "youtube_spend",
+      "youtube_impression",
+      "dv360_spend",
+      "dv360_impression",
+      "ooh_spend",
+      "ooh_impression",
+      "promo_control",
+      "competitor_activity_score_control",
+      "sentiment_score_control"
+    ],
+    "channel_keys": [
+      "google_sem",
+      "bing_sem",
+      "meta",
+      "youtube",
+      "dv360",
+      "ooh"
+    ],
+    "has_contribution_ground_truth": true
+  },
+  "dry_run": true,
+  "models": {
+    "tabfm": {
+      "name": "TabFM",
+      "mode": "mock",
+      "y_pred_test": [
+        917177.8693898702,
+        944185.9011250493,
+        977800.7143922225,
+        888016.3425119756
+      ],
+      "metrics": {
+        "rmse": 90347.86969327887,
+        "mae": 77166.92064522061,
+        "r2": -27.20333161398104,
+        "mape_pct": 7.581610363626441
+      },
+      "contribution_pred": {
+        "google_sem": 0.0,
+        "bing_sem": 149313.74393414892,
+        "meta": 321134.3922675712,
+        "youtube": 0.0,
+        "dv360": 139486.5558546872,
+        "ooh": 0.0
+      },
+      "contribution_metrics": {
+        "contrib_mae": 129207.75534273453,
+        "contrib_share_mae": 0.2148102259882331,
+        "contrib_corr": -0.24024566064049613,
+        "contrib_share_corr": -0.2402456606404962
+      },
+      "extras": {
+        "note": "Dry-run mock (Ridge). TabFM weights not used."
+      }
+    },
+    "meridian": {
+      "name": "Meridian-style baseline",
+      "mode": "meridian_style",
+      "y_pred_test": [
+        1021242.7146608958,
+        992772.22449213,
+        984595.6395833453,
+        1032264.9098017325
+      ],
+      "metrics": {
+        "rmse": 11587.049942059746,
+        "mae": 10217.82526634037,
+        "r2": 0.5361149910836476,
+        "mape_pct": 1.0064692353940068
+      },
+      "contribution_pred": {
+        "google_sem": 9448.55279420064,
+        "bing_sem": 13807.664530999948,
+        "meta": 14226.168380900152,
+        "youtube": 8986.776269662769,
+        "dv360": 7308.35742336977,
+        "ooh": 5417.8626923921565
+      },
+      "contribution_metrics": {
+        "contrib_mae": 85515.40881807909,
+        "contrib_share_mae": 0.08347470366661384,
+        "contrib_corr": 0.02771970077080289,
+        "contrib_share_corr": 0.027719700770802914
+      },
+      "extras": {
+        "note": "Proxy: geometric adstock + Hill saturation + Ridge. Not full Google Meridian Bayesian MCMC.",
+        "media_cols": [
+          "google_sem_media_transform",
+          "bing_sem_media_transform",
+          "meta_media_transform",
+          "youtube_media_transform",
+          "dv360_media_transform",
+          "ooh_media_transform"
+        ],
+        "dry_run": true
+      }
+    }
+  },
+  "metrics_table": [
+    {
+      "model": "TabFM",
+      "mode": "mock",
+      "kpi_rmse": 90347.86969327887,
+      "kpi_mae": 77166.92064522061,
+      "kpi_r2": -27.20333161398104,
+      "kpi_mape_pct": 7.581610363626441,
+      "recovery_contrib_mae": 129207.75534273453,
+      "recovery_contrib_share_mae": 0.2148102259882331,
+      "recovery_contrib_corr": -0.24024566064049613,
+      "recovery_contrib_share_corr": -0.2402456606404962
+    },
+    {
+      "model": "Meridian-style baseline",
+      "mode": "meridian_style",
+      "kpi_rmse": 11587.049942059746,
+      "kpi_mae": 10217.82526634037,
+      "kpi_r2": 0.5361149910836476,
+      "kpi_mape_pct": 1.0064692353940068,
+      "recovery_contrib_mae": 85515.40881807909,
+      "recovery_contrib_share_mae": 0.08347470366661384,
+      "recovery_contrib_corr": 0.02771970077080289,
+      "recovery_contrib_share_corr": 0.027719700770802914
+    }
+  ]
+}
