@@ -1,10 +1,10 @@
 # Results
 
-- `metrics.json` / `metrics.csv` — predictive holdout comparison (real or last successful run)
-- `metrics_dry_run.*` — mock TabFM + Meridian-style proxy
-- `deliverables_matrix.md` / `.csv` — honest Meridian vs TabFM capability matrix
+- `metrics.json` / `metrics.csv` — **fair OOS** holdout KPI on the same frozen official table + shared `holdout_id`
+- `metrics_dry_run.*` — mock path
+- `deliverables_matrix.md` / `.csv` — gap analysis (predictive Yes; contribution/ROI/curves/budget/geo = No for TabFM)
 
-Default dataset for runs: official `national_all_channels.csv` (CPU-friendly).
-Preferred Getting Started file `geo_all_channels.csv` is vendored under `data/official/`.
+Practitioner takeaway: **predictive fit ≠ media decisioning.**
 
-All numbers are on **simulated/demo** data only.
+Meridian MCMC in these artifacts is **directional / not decision-grade**.
+All numbers are **simulated/demo** only.

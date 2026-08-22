@@ -1,124 +1,101 @@
-# TabFM vs Meridian MMM — synthetic / official-demo comparison PoC
+# TabFM vs Meridian — honest gap analysis (official demo data)
 
-Side-by-side evaluation of **Google Research TabFM** (tabular foundation model)
-and **Google Meridian** on **official Meridian simulated/demo data**, plus an
-honest checklist of whether TabFM can produce Meridian’s actionable deliverables.
+**Practitioner takeaway: predictive fit ≠ media decisioning.**
 
-> **Simulated / demo data only.** Official Meridian CSVs and any legacy dummy
-> files here are not estimates of real campaign performance. Do not use these
-> numbers for budgeting or business decisions.
+This PoC asks whether Google Research **TabFM** (tabular ICL regressor) can produce
+the same **actionable Meridian deliverables** marketers use for media decisions.
+It is an **honest gap analysis**, not a bake-off framed to crown a winner.
 
-## Headline answer: can TabFM output the same as Meridian?
+> **Simulated / demo data only.** Official Meridian CSVs here are not estimates of
+> real campaign performance. Tiny MCMC runs are **directional / not decision-grade**.
 
-**Mostly no.** TabFM is a zero-shot tabular ICL **regressor**, not an MMM.
+## Headline
 
-| Capability counts (see matrix below) | |
-| --- | ---: |
-| Yes | 1 (predictive KPI fit only) |
-| Partial | 2 (ablation / geo-row prediction — not Meridian-equivalent) |
-| No | 3 (ROI, response curves, budget optimization) |
+| Question | Answer |
+| --- | --- |
+| Can TabFM match Meridian on **holdout KPI prediction**? | **Yes** (predictive scores only) |
+| Can TabFM produce Meridian **contribution / ROI / curves / budget / geo decisioning**? | **No** (Meridian-only product surface) |
 
-### Deliverables matrix
+Optional `--ablation-proxy` for TabFM is a sensitivity hack — **not** Meridian-equivalent,
+**not** causal, and **excluded** from the headline metrics table.
 
-| Meridian deliverable | How Meridian produces it | TabFM equivalent? | If Partial / notes |
-| --- | --- | --- | --- |
-| Expected outcome / predictive fit | `Analyzer.expected_outcome` / `predictive_accuracy` | **Yes** | Comparable as predictive scores only, not as a structural MMM fit |
-| Channel contribution (incremental) | `Analyzer.incremental_outcome` | **Partial** | Optional leave-one-channel ablation is a hacky proxy — **not** causal / Meridian-equivalent |
-| ROI / effectiveness by channel | `Analyzer.roi` / `summary_metrics` | **No** | No structural ROI |
-| Response curves | `Analyzer.response_curves` | **No** | No adstock/Hill response API |
-| Budget optimization / scenarios | `meridian.analysis.optimizer` | **No** | No Meridian optimizer |
-| Geo-level insights | Geo hierarchical Meridian + Analyzer | **Partial** | Can score geo-week rows; no hierarchical geo posteriors / geo ROI |
+## Fair predictive evaluation
 
-The same matrix is exported to `results/deliverables_matrix.md` on each run and
-rendered in `tabfm_vs_meridian.ipynb`.
+Both models use the **same frozen input table** and the **same later-week holdout**:
 
-## What this PoC measures
+1. Load one official Meridian-schema CSV
+2. Build shared `holdout_id` / holdout times (earlier weeks train, later weeks holdout)
+3. **TabFM:** ICL context = train rows (optionally capped); predict holdout KPI
+4. **Meridian:** `ModelSpec(holdout_id=...)` excludes holdout **KPI** from training; score
+   holdout predictive KPI via `expected_outcome` on those weeks (+ `predictive_accuracy` Train/Test)
 
-1. **Predictive metrics** (where comparable): holdout RMSE / MAE / R² / MAPE on KPI
-2. **Deliverables checklist**: Meridian artifacts extracted when a real fit succeeds
-   (contribution, ROI, summary metrics, response-curve preview) vs TabFM gaps
-3. Optional contribution recovery only if planted `contribution_*` exist (legacy data)
+**Documented remaining asymmetry:** Meridian still uses holdout **media** for Adstock
+carryover (upstream design). TabFM never sees holdout rows as context. MCMC here uses
+tiny chains — directional PoC, not decision-grade.
+
+## Deliverables matrix
+
+| Meridian deliverable | TabFM? |
+| --- | --- |
+| Predictive KPI / expected outcome | **Yes** |
+| Channel contribution (incremental) | **No** |
+| ROI / effectiveness | **No** |
+| Response curves | **No** |
+| Budget optimization | **No** |
+| Geo-level media decisioning | **No** |
+
+Full matrix: `results/deliverables_matrix.md` and `mmm_compare/deliverables.py`.
 
 ## Data
 
-- **Preferred official demo:** `data/official/geo_all_channels.csv` (Getting Started
-  [`geo_all_channels.csv`](https://raw.githubusercontent.com/google/meridian/refs/heads/main/meridian/data/simulated_data/csv/geo_all_channels.csv))
-- **Runtime default on this CPU PoC:** `data/official/national_all_channels.csv`
-  — full 40×156 geo MCMC is typically too slow without a GPU. Documented in
-  `data/official/SOURCE.md` (pinned URL + SHA-256).
-- Flags: `--dataset national|geo|geo-agg|hypothetical-geo|legacy`
-- Legacy hand-rolled HK dummy: `data/legacy/` (optional)
+| Role | File | Notes |
+| --- | --- | --- |
+| **Preferred official** (Getting Started) | `data/official/geo_all_channels.csv` | 40 geos × 156 weeks |
+| **Runtime default (CPU PoC)** | `data/official/national_all_channels.csv` | Same Meridian schema; tractable MCMC |
+| Optional | `hypothetical_geo_all_channels.csv`, `data/legacy/` | Alternate / older dummy |
 
-## Models
+Pinned URLs + SHA-256: `data/official/SOURCE.md`. Column roles (KPI / media / controls):
+`data/SCHEMA.md`.
 
-### TabFM
+```bash
+# Preferred geo file (Meridian geo fit may skip on CPU)
+python scripts/run_comparison.py --dataset geo -v
 
-- [google-research/tabfm](https://github.com/google-research/tabfm) — `TabFMRegressor`
-- Weights: Hugging Face `google/tabfm-1.0.0-pytorch`
-- **Weight license:** pretrained weights are **`tabfm-non-commercial-v1.0`**
-  (non-commercial / non-production). Source is Apache-2.0.
-- `--dry-run` uses a Ridge mock so the pipeline always completes
-- Optional `HF_TOKEN` for Hub downloads — do not commit tokens
-
-### Meridian
-
-- Prefer real [`google-meridian`](https://developers.google.com/meridian) with
-  **minimal** MCMC; extract Analyzer deliverables when possible
-- Fallback: labeled **Meridian-style** adstock + Hill + Ridge proxy (not Bayesian Meridian)
+# Runtime default
+python scripts/run_comparison.py --dataset national -v
+```
 
 ## Quick start
 
 ```bash
 bash scripts/install_deps.sh
-INSTALL_MERIDIAN=1 bash scripts/install_deps.sh   # optional
+INSTALL_MERIDIAN=1 bash scripts/install_deps.sh
 
-# Always-works path
 python scripts/run_comparison.py --dry-run
-
-# Default: official national_all_channels + best-effort TabFM/Meridian
 python scripts/run_comparison.py -v
-
-# Attempt official geo file (Meridian geo fit may skip on CPU)
-python scripts/run_comparison.py --dataset geo -v
-
-# Nationally aggregate geo CSV for tabular prediction
-python scripts/run_comparison.py --dataset geo-agg --no-meridian -v
+# Optional, quarantined:
+python scripts/run_comparison.py -v --ablation-proxy
 ```
 
-Outputs: `results/metrics.json`, `results/deliverables_matrix.md`, ROI/contribution
-tables inside the JSON / notebook when Meridian succeeds.
+Outputs: `results/metrics.json` (fair OOS KPI), `results/deliverables_matrix.md`,
+Meridian-only ROI/contribution tables inside the JSON (not peer-scored against TabFM).
 
-## Layout
+## Models
 
-```text
-data/official/        vendored Meridian simulated CSVs + SOURCE.md
-data/legacy/          optional older hand-rolled dummy
-mmm_compare/          load, TabFM, Meridian, deliverables matrix, metrics
-scripts/              fetch data, install, CLI
-results/              metrics + deliverables matrix from a run
-tabfm_vs_meridian.ipynb
-```
-
-## Assumptions
-
-1. Default dataset is **national** for CPU Meridian tractability; geo CSV is vendored
-   as the preferred official Getting Started file.
-2. TabFM context capped at 100 rows (`--max-context-rows`) per upstream ICL limits.
-3. Real Meridian holdout KPI uses in-sample `expected_outcome` on later weeks
-   (fit on full series). TabFM is true OOS ICL on the time split.
-4. Tiny MCMC settings are PoC-only — not production Meridian quality.
-5. We do **not** fake Meridian ROI / response curves / budget opt from TabFM.
+- **TabFM:** [google-research/tabfm](https://github.com/google-research/tabfm) —
+  weights `google/tabfm-1.0.0-pytorch`, license **`tabfm-non-commercial-v1.0`**
+  (non-commercial). Optional `HF_TOKEN` — do not commit secrets.
+- **Meridian:** [`google-meridian`](https://developers.google.com/meridian) with
+  `holdout_id`; fallback Meridian-style Ridge+adstock+Hill if install/fit fails.
 
 ## What is / is not claimed
 
 | Claimed | Not claimed |
 | --- | --- |
-| Runnable comparison on official Meridian demo data | Real campaign ROI / budgets |
-| Honest deliverables gap analysis | That TabFM replaces causal MMM |
-| Best-effort Meridian Analyzer tables when fit succeeds | Production-calibrated Meridian chains |
+| Fair holdout KPI comparison on frozen official demo data | That TabFM replaces causal MMM |
+| Honest deliverables gap analysis | Bake-off “winner” for media decisions |
+| Directional Meridian Analyzer tables when fit succeeds | Decision-grade MCMC / real campaign ROI |
 
 ## License notes
 
-- This PoC code: Apache-2.0 unless otherwise noted
-- TabFM pretrained weights: non-commercial (upstream)
-- Meridian + its simulated data: follow Google Meridian / package terms
+PoC code Apache-2.0 unless noted; TabFM weights non-commercial; Meridian per upstream terms.

@@ -1,4 +1,4 @@
-"""Orchestrate TabFM vs Meridian comparison: metrics + deliverables matrix."""
+"""Orchestrate TabFM vs Meridian: fair OOS predictive metrics + deliverables gap analysis."""
 
 from __future__ import annotations
 
@@ -37,24 +37,25 @@ def _jsonable(obj: Any) -> Any:
 
 
 def result_to_row(result: ModelResult) -> dict[str, Any]:
+    """Headline metrics table: predictive KPI only (no contribution peer columns)."""
     return {
         "model": result.name,
         "mode": result.mode,
         **{f"kpi_{k}": v for k, v in result.metrics.items()},
-        **{f"recovery_{k}": v for k, v in result.contribution_metrics.items()},
     }
 
 
 def _deliverable_tables(results: dict[str, ModelResult]) -> dict[str, Any]:
-    """Side-by-side Meridian vs TabFM deliverable artifacts (where present)."""
     mer = results["meridian"].extras.get("deliverables") or {}
     tab = results["tabfm"].extras.get("deliverables") or {}
     return {
-        "meridian": {
+        "meridian_only_product_surface": {
             "mode": results["meridian"].mode,
+            "mcmc_quality": results["meridian"].extras.get("mcmc_quality")
+            or mer.get("mcmc_quality"),
             "predictive_accuracy": mer.get("predictive_accuracy"),
             "channel_contribution": mer.get("channel_contribution"),
-            "roi_by_channel": mer.get("roi_by_channel") or mer.get("roi_by_channel_proxy"),
+            "roi_by_channel": mer.get("roi_by_channel"),
             "summary_metrics_preview": (
                 (mer.get("summary_metrics") or [])[:15]
                 if isinstance(mer.get("summary_metrics"), list)
@@ -67,11 +68,11 @@ def _deliverable_tables(results: dict[str, ModelResult]) -> dict[str, Any]:
         },
         "tabfm": {
             "mode": results["tabfm"].mode,
-            "channel_contribution_ablation_proxy": tab.get("channel_contribution"),
-            "roi_by_channel": tab.get("roi_by_channel"),
-            "response_curves": tab.get("response_curves"),
-            "budget_optimization": tab.get("budget_optimization"),
+            "predictive_kpi_only": True,
             "honesty": tab.get("honesty"),
+            "ablation_proxy_NOT_meridian_equivalent": tab.get(
+                "ablation_proxy_NOT_meridian_equivalent"
+            ),
         },
     }
 
@@ -85,6 +86,7 @@ def run_comparison(
     train_frac: float = 2 / 3,
     results_dir: str | Path | None = None,
     max_context_rows: int = 100,
+    ablation_proxy: bool = False,
 ) -> tuple[pd.DataFrame, dict[str, ModelResult], dict[str, Any]]:
     data = load_mmm_dataset(
         data_path,
@@ -93,18 +95,20 @@ def run_comparison(
         max_context_rows=max_context_rows,
     )
     logger.info(
-        "Loaded dataset=%s path=%s rows=%s KPI=%s train=%s test=%s features=%s | %s",
+        "Frozen input dataset=%s path=%s rows=%s KPI=%s "
+        "train=%s holdout=%s tabfm_context=%s features=%s | %s",
         data.dataset_name,
         data.source_path,
         len(data.frame),
         data.kpi_col,
         len(data.train_idx),
         len(data.test_idx),
+        len(data.tabfm_context_idx),
         len(data.feature_cols),
         data.notes,
     )
 
-    tabfm = run_tabfm(data, dry_run=dry_run)
+    tabfm = run_tabfm(data, dry_run=dry_run, ablation_proxy=ablation_proxy)
     meridian = run_meridian_baseline(data, prefer_real=prefer_real_meridian, dry_run=dry_run)
 
     results = {"tabfm": tabfm, "meridian": meridian}
@@ -115,9 +119,23 @@ def run_comparison(
 
     payload = {
         "disclaimer": (
-            "Official Meridian simulated/demo data (and any legacy dummy data) only. "
-            "Metrics and Meridian artifacts are not estimates of real campaign performance."
+            "Official Meridian simulated/demo data only. Not real campaign performance. "
+            "Predictive fit ≠ media decisioning."
         ),
+        "practitioner_takeaway": caps["headline"],
+        "fair_eval": {
+            "frozen_input": data.source_path,
+            "shared_holdout_times": data.holdout_times,
+            "holdout_id_shape": list(np.asarray(data.holdout_id).shape),
+            "tabfm_context_rows": len(data.tabfm_context_idx),
+            "meridian_train_kpi_rows": len(data.train_idx),
+            "scoring": (
+                "Both models scored on the same later-week holdout KPI. "
+                "Meridian uses ModelSpec.holdout_id (KPI excluded from training). "
+                "TabFM uses train rows as ICL context only."
+            ),
+            "remaining_asymmetry": results["meridian"].extras.get("note"),
+        },
         "data": {
             "dataset": data.dataset_name,
             "preferred_official": PREFERRED_OFFICIAL,
@@ -130,10 +148,10 @@ def run_comparison(
             "n_test": len(data.test_idx),
             "feature_cols": data.feature_cols,
             "channel_keys": data.channel_keys,
-            "has_contribution_ground_truth": bool(data.contribution_cols),
             "notes": data.notes,
         },
         "dry_run": dry_run,
+        "ablation_proxy": ablation_proxy,
         "models": {k: _jsonable(v) for k, v in results.items()},
         "metrics_table": table.reset_index().to_dict(orient="records"),
         "deliverables_matrix": matrix.to_dict(orient="records"),
@@ -161,14 +179,14 @@ def run_comparison(
 
 
 def print_table(table: pd.DataFrame) -> None:
-    print("\n=== Side-by-side holdout predictive metrics (simulated data only) ===")
+    print("\n=== Holdout predictive KPI (same frozen table + shared holdout; simulated data) ===")
     print(table.to_string(float_format=lambda x: f"{x:,.4f}"))
     print()
 
 
 def print_deliverables_matrix() -> None:
     caps = capability_summary()
-    print("\n=== Deliverables matrix: can TabFM output the same as Meridian? ===")
+    print("\n=== Deliverables gap analysis (not a bake-off win framing) ===")
     print(caps["headline"])
     print()
     print(deliverables_dataframe().to_string(index=False))

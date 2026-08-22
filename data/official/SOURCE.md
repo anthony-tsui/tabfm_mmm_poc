@@ -28,14 +28,26 @@ bash scripts/fetch_official_meridian_data.sh
 **Disclaimer:** These are Google Meridian *simulated/demo* datasets, not real
 campaign performance.
 
-## Runtime default in this PoC
+## Preferred vs runtime default (unambiguous)
 
-- **Preferred official demo file:** `geo_all_channels.csv` (Getting Started;
-  40 geos × 156 weeks).
-- **Default for Meridian MCMC on CPU VMs:** `national_all_channels.csv`
-  (156 national weeks). Full geo MCMC is typically too slow / memory-heavy
-  without a GPU. Pass `--dataset geo` to attempt the geo model, or
-  `--dataset geo-agg` to nationally aggregate geo rows for TabFM-style
-  prediction while still documenting that Meridian geo insights need a geo fit.
+| | CLI | File |
+| --- | --- | --- |
+| **Preferred official** (Getting Started) | `--dataset geo` | `geo_all_channels.csv` |
+| **Runtime default (this CPU PoC)** | `--dataset national` (default) | `national_all_channels.csv` |
+
+Full geo MCMC (40×156) is usually too heavy without a GPU. Use `--dataset geo` to
+attempt it, or `--dataset geo-agg` to nationally aggregate geo rows for tabular
+prediction.
+
+### Column roles (same Meridian schema)
+
+- **KPI:** `conversions` (+ `revenue_per_conversion`)
+- **Paid media:** `Channel{N}_impression`, `Channel{N}_spend`
+- **Organic:** `Organic_channel0_impression`
+- **Controls:** `competitor_sales_control`, `sentiment_score_control`
+- **Non-media:** `Promo`
+- **Geo-only:** `geo`, `population`
+
+See also `data/SCHEMA.md`.
 
 Legacy hand-rolled HK skincare dummy lives under `data/legacy/` (optional).

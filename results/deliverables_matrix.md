@@ -1,12 +1,12 @@
 # Meridian vs TabFM deliverables
 
-TabFM can match Meridian on predictive KPI scoring only. Contribution/ROI/response curves/budget optimization are MMM-structural and are not native TabFM deliverables.
+Practitioner takeaway: predictive fit ≠ media decisioning. TabFM can match Meridian on holdout KPI prediction only. Contribution, ROI, response curves, budget optimization, and geo decisioning are Meridian-only (hard No for TabFM).
 
-| Meridian deliverable | How Meridian produces it | TabFM equivalent? | If Partial / notes |
+| Meridian deliverable | How Meridian produces it | TabFM equivalent? | Notes |
 | --- | --- | --- | --- |
-| Expected outcome / predictive fit | Analyzer.expected_outcome / predictive_accuracy — Bayesian posterior expected KPI given media, controls, and model structure (adstock, Hill, etc.). | **Yes** | TabFMRegressor can predict a continuous KPI from tabular media/control features via ICL. Comparable only as a predictive score (RMSE/MAE/R²), not as a structural MMM fit. |
-| Channel contribution (incremental outcome) | Analyzer.incremental_outcome — counterfactual E(Y|treatment) − E(Y|no treatment) under the fitted Bayesian MMM. | **Partial** | No native incremental contribution. Optional leave-one-channel ablation on predictions is a hacky sensitivity proxy — NOT Meridian-equivalent and not causal. |
-| ROI / effectiveness by channel | Analyzer.roi / summary_metrics — incremental outcome ÷ spend with posterior uncertainty. | **No** | TabFM has no spend→outcome structural ROI. Dividing ablation deltas by spend would be misleading and is not implemented as a Meridian-equivalent deliverable. |
-| Response curves (diminishing returns) | Analyzer.response_curves — Hill/saturation response under historical flighting with spend multipliers. | **No** | Zero-shot tabular regression has no adstock/Hill media transform or native response-curve API. |
-| Budget optimization / scenario planning | meridian.analysis.optimizer — allocate budget under response curves / ROI constraints. | **No** | No optimizer. Any grid-search over TabFM predictions would be an ad-hoc experiment, not Meridian budget optimization. |
-| Geo-level insights | Geo hierarchical Meridian model + Analyzer with selected_geos / geo aggregation flags. | **Partial** | TabFM can take geo-week rows as tabular features and predict KPI per row, but it does not provide hierarchical geo shrinkage, geo ROI, or Meridian geo posteriors. |
+| Expected outcome / predictive KPI fit | ModelSpec.holdout_id + Analyzer.expected_outcome / predictive_accuracy — Bayesian posterior expected KPI; holdout KPI excluded from training. | **Yes** | TabFMRegressor can score holdout KPI from media/control features via ICL. Comparable only as predictive fit — not media decisioning. |
+| Channel contribution (incremental outcome) | Analyzer.incremental_outcome — structural counterfactual under the fitted MMM. | **No** | Meridian-only. TabFM has no incremental_outcome. Optional --ablation-proxy is a sensitivity hack — NOT Meridian-equivalent, not causal, excluded from headline results. |
+| ROI / effectiveness by channel | Analyzer.roi / summary_metrics | **No** | Meridian-only product surface. No TabFM structural ROI. |
+| Response curves (diminishing returns) | Analyzer.response_curves (Hill/saturation under flighting) | **No** | Meridian-only. TabFM has no adstock/Hill response API. |
+| Budget optimization / scenario planning | meridian.analysis.optimizer | **No** | Meridian-only. No TabFM budget optimizer. |
+| Geo-level media decisioning | Geo hierarchical Meridian + Analyzer geo views | **No** | Meridian-only for geo ROI/contribution. TabFM may score geo-week rows as tabular prediction, but that is not hierarchical geo MMM decisioning. |

@@ -1,5 +1,70 @@
 {
-  "disclaimer": "Official Meridian simulated/demo data (and any legacy dummy data) only. Metrics and Meridian artifacts are not estimates of real campaign performance.",
+  "disclaimer": "Official Meridian simulated/demo data only. Not real campaign performance. Predictive fit \u2260 media decisioning.",
+  "practitioner_takeaway": "Practitioner takeaway: predictive fit \u2260 media decisioning. TabFM can match Meridian on holdout KPI prediction only. Contribution, ROI, response curves, budget optimization, and geo decisioning are Meridian-only (hard No for TabFM).",
+  "fair_eval": {
+    "frozen_input": "/workspace/data/official/national_all_channels.csv",
+    "shared_holdout_times": [
+      "2023-01-23",
+      "2023-01-30",
+      "2023-02-06",
+      "2023-02-13",
+      "2023-02-20",
+      "2023-02-27",
+      "2023-03-06",
+      "2023-03-13",
+      "2023-03-20",
+      "2023-03-27",
+      "2023-04-03",
+      "2023-04-10",
+      "2023-04-17",
+      "2023-04-24",
+      "2023-05-01",
+      "2023-05-08",
+      "2023-05-15",
+      "2023-05-22",
+      "2023-05-29",
+      "2023-06-05",
+      "2023-06-12",
+      "2023-06-19",
+      "2023-06-26",
+      "2023-07-03",
+      "2023-07-10",
+      "2023-07-17",
+      "2023-07-24",
+      "2023-07-31",
+      "2023-08-07",
+      "2023-08-14",
+      "2023-08-21",
+      "2023-08-28",
+      "2023-09-04",
+      "2023-09-11",
+      "2023-09-18",
+      "2023-09-25",
+      "2023-10-02",
+      "2023-10-09",
+      "2023-10-16",
+      "2023-10-23",
+      "2023-10-30",
+      "2023-11-06",
+      "2023-11-13",
+      "2023-11-20",
+      "2023-11-27",
+      "2023-12-04",
+      "2023-12-11",
+      "2023-12-18",
+      "2023-12-25",
+      "2024-01-01",
+      "2024-01-08",
+      "2024-01-15"
+    ],
+    "holdout_id_shape": [
+      156
+    ],
+    "tabfm_context_rows": 100,
+    "meridian_train_kpi_rows": 104,
+    "scoring": "Both models scored on the same later-week holdout KPI. Meridian uses ModelSpec.holdout_id (KPI excluded from training). TabFM uses train rows as ICL context only.",
+    "remaining_asymmetry": "Shared holdout_id excludes holdout KPI from Meridian training (fair OOS KPI). Remaining Meridian design asymmetry: holdout media still enters Adstock for subsequent weeks (upstream Meridian behavior). TabFM never sees holdout rows as ICL context. MCMC here is directional PoC (tiny chains), not decision-grade."
+  },
   "data": {
     "dataset": "national",
     "preferred_official": "geo",
@@ -8,7 +73,7 @@
     "n_rows": 156,
     "is_geo": false,
     "kpi": "conversions",
-    "n_train": 100,
+    "n_train": 104,
     "n_test": 52,
     "feature_cols": [
       "Channel0_spend",
@@ -33,103 +98,87 @@
       "Channel3",
       "Channel4"
     ],
-    "has_contribution_ground_truth": false,
-    "notes": "national weekly series; truncated train context to last 100 rows"
+    "notes": "national weekly series; shared time holdout train=104 holdout=52; TabFM ICL context capped to last 100 train rows (Meridian still uses full non-holdout KPI weeks)"
   },
   "dry_run": false,
+  "ablation_proxy": false,
   "models": {
     "tabfm": {
       "name": "TabFM",
       "mode": "tabfm",
       "y_pred_test": [
-        410118176.0,
-        416093536.0,
-        423747008.0,
-        431568896.0,
-        410801376.0,
-        441492576.0,
-        420629440.0,
-        427895264.0,
-        435374912.0,
-        428613376.0,
-        446421760.0,
-        435053856.0,
-        436028608.0,
-        421488928.0,
-        405956256.0,
-        428774336.0,
-        440358656.0,
-        428664992.0,
-        433926208.0,
-        425877792.0,
-        426269952.0,
-        434846400.0,
-        421968736.0,
-        418618816.0,
-        425748128.0,
-        414667296.0,
-        421883072.0,
-        410236224.0,
-        431744192.0,
+        410184352.0,
+        416105344.0,
+        423733632.0,
+        431569792.0,
+        410827328.0,
+        441517600.0,
+        420619968.0,
+        427877376.0,
+        435443776.0,
+        428651808.0,
+        446464704.0,
+        435077120.0,
+        436057216.0,
+        421500608.0,
+        405906176.0,
+        428815456.0,
+        440397984.0,
+        428692512.0,
+        433934240.0,
+        425887648.0,
+        426225664.0,
+        434858912.0,
+        421949600.0,
+        418619040.0,
+        425702080.0,
+        414661024.0,
+        421858464.0,
+        410279136.0,
+        431768320.0,
         444028704.0,
-        397355200.0,
-        429610464.0,
-        418953664.0,
-        409956736.0,
-        424394400.0,
-        401951744.0,
-        423454752.0,
-        429516576.0,
-        409104064.0,
-        428747488.0,
-        419604864.0,
-        427948928.0,
-        436361280.0,
-        415682272.0,
-        416220192.0,
-        420564800.0,
-        445473856.0,
-        417228288.0,
-        423274016.0,
-        414104800.0,
-        421477472.0,
-        423328832.0
+        397348064.0,
+        429665024.0,
+        418954848.0,
+        409933056.0,
+        424461472.0,
+        401926688.0,
+        423446688.0,
+        429547872.0,
+        409136256.0,
+        428733184.0,
+        419628128.0,
+        427947136.0,
+        436370208.0,
+        415654112.0,
+        416245216.0,
+        420567520.0,
+        445434496.0,
+        417261824.0,
+        423240000.0,
+        414123584.0,
+        421492480.0,
+        423313472.0
       ],
       "metrics": {
-        "rmse": 24202848.098394077,
-        "mae": 18333722.761730775,
-        "r2": 0.22301465344568716,
-        "mape_pct": 4.30427332421602
+        "rmse": 24206506.082228128,
+        "mae": 18334324.607884623,
+        "r2": 0.22277977078985745,
+        "mape_pct": 4.3045385655369595
       },
-      "contribution_pred": {
-        "Channel0": 2629688.0,
-        "Channel1": 66320.61538461539,
-        "Channel2": 0.0,
-        "Channel3": 2190089.230769231,
-        "Channel4": 8403350.76923077
-      },
+      "contribution_pred": {},
       "contribution_metrics": {},
       "extras": {
         "backend": "pytorch",
         "weights": "google/tabfm-1.0.0-pytorch",
         "deliverables": {
-          "expected_outcome": "holdout KPI predictions via TabFMRegressor (predictive only)",
-          "channel_contribution": {
-            "method": "leave-one-channel ablation (hacky proxy)",
-            "values": {
-              "Channel0": 2629688.0,
-              "Channel1": 66320.61538461539,
-              "Channel2": 0.0,
-              "Channel3": 2190089.230769231,
-              "Channel4": 8403350.76923077
-            },
-            "meridian_equivalent": false
-          },
+          "predictive_kpi": "holdout KPI predictions via TabFMRegressor (only Yes vs Meridian)",
+          "channel_contribution": null,
           "roi_by_channel": null,
           "response_curves": null,
           "budget_optimization": null,
-          "geo_insights": "Row-level geo-week prediction possible if geo panel features are supplied; no Meridian hierarchical geo posteriors.",
-          "honesty": "TabFM is a tabular ICL regressor, not an MMM. Only predictive KPI is a Yes; other Meridian deliverables are Partial/No \u2014 see deliverables matrix."
+          "geo_insights": null,
+          "honesty": "TabFM is a tabular ICL regressor, not an MMM. Predictive KPI is the only comparable deliverable. Contribution / ROI / curves / budget / geo decisioning are Meridian-only product surface (hard No for TabFM)."
         }
       }
     },
@@ -137,126 +186,203 @@
       "name": "Meridian",
       "mode": "meridian",
       "y_pred_test": [
-        410983660.8,
-        411718131.84,
-        422468378.88,
-        433277469.44,
-        412466773.12,
-        453383747.2,
-        406617123.2,
-        425143593.6,
-        435974508.8,
-        417465681.28,
-        440902055.68,
-        434315531.52,
-        434957610.88,
-        416951987.84,
-        394537475.2,
-        422989863.04,
-        441098218.88,
-        430446468.48,
-        438135119.36,
-        419366207.36,
-        424908080.0,
-        428742087.68,
-        411916218.24,
-        415016347.52,
-        432809027.2,
-        416779208.32,
-        418089347.84,
-        403990564.48,
-        427543564.8,
-        458899479.04,
-        394571424.0,
-        437250841.6,
-        407759428.48,
-        404847359.36,
-        439931802.24,
-        404054135.04,
-        423259238.4,
-        437593688.96,
-        413333408.0,
-        422059811.2,
-        437960268.16,
-        440248332.16,
-        439275950.08,
-        426748045.44,
-        424875660.8,
-        431760444.16,
-        466549135.36,
-        426833184.64,
-        428910926.72,
-        415214339.2,
-        428888551.68,
-        425187153.92
+        410480231.68,
+        411863903.36,
+        421293147.52,
+        433337596.16,
+        411917562.24,
+        451568954.88,
+        407450223.36,
+        423965603.2,
+        434159914.88,
+        417004522.24,
+        440461340.8,
+        432962590.08,
+        434906894.08,
+        418481204.48,
+        394671290.88,
+        423497951.36,
+        438810481.28,
+        428396425.6,
+        436775738.24,
+        418408535.04,
+        424347160.32,
+        426910928.0,
+        411322503.04,
+        415835943.04,
+        429240568.96,
+        416955104.64,
+        417015923.84,
+        404164493.44,
+        424368301.44,
+        453498246.4,
+        394826648.96,
+        434363624.32,
+        407610734.72,
+        404208057.6,
+        438486817.28,
+        403344650.88,
+        422234746.88,
+        436855816.96,
+        412004375.68,
+        419112081.28,
+        435115344.64,
+        436018288.0,
+        437353521.92,
+        424270336.64,
+        423610167.04,
+        431090197.12,
+        461246957.44,
+        424107733.12,
+        427613248.0,
+        414239034.24,
+        429320716.8,
+        424069980.16
       ],
       "metrics": {
-        "rmse": 21050331.68869116,
-        "mae": 15850247.821730766,
-        "r2": 0.41224306119905063,
-        "mape_pct": 3.7248755167640097
+        "rmse": 21582723.66001628,
+        "mae": 16192536.694038462,
+        "r2": 0.38213673009005056,
+        "mape_pct": 3.79296068416703
       },
       "contribution_pred": {
-        "Channel0": 2831100584.96,
-        "Channel1": 2058342536.96,
-        "Channel2": 1536397622.4,
-        "Channel3": 5290175644.16,
-        "Channel4": 2635386885.12
+        "Channel0": 2701860815.36,
+        "Channel1": 2297464430.08,
+        "Channel2": 1310741236.48,
+        "Channel3": 5015777064.32,
+        "Channel4": 3037929028.48
       },
       "contribution_metrics": {},
       "extras": {
         "n_keep": 50,
         "n_chains": 1,
-        "note": "Minimal Meridian MCMC PoC. Holdout KPI uses in-sample expected_outcome on later weeks (fit on full series).",
+        "holdout_times": [
+          "2023-01-23",
+          "2023-01-30",
+          "2023-02-06",
+          "2023-02-13",
+          "2023-02-20",
+          "2023-02-27",
+          "2023-03-06",
+          "2023-03-13",
+          "2023-03-20",
+          "2023-03-27",
+          "2023-04-03",
+          "2023-04-10",
+          "2023-04-17",
+          "2023-04-24",
+          "2023-05-01",
+          "2023-05-08",
+          "2023-05-15",
+          "2023-05-22",
+          "2023-05-29",
+          "2023-06-05",
+          "2023-06-12",
+          "2023-06-19",
+          "2023-06-26",
+          "2023-07-03",
+          "2023-07-10",
+          "2023-07-17",
+          "2023-07-24",
+          "2023-07-31",
+          "2023-08-07",
+          "2023-08-14",
+          "2023-08-21",
+          "2023-08-28",
+          "2023-09-04",
+          "2023-09-11",
+          "2023-09-18",
+          "2023-09-25",
+          "2023-10-02",
+          "2023-10-09",
+          "2023-10-16",
+          "2023-10-23",
+          "2023-10-30",
+          "2023-11-06",
+          "2023-11-13",
+          "2023-11-20",
+          "2023-11-27",
+          "2023-12-04",
+          "2023-12-11",
+          "2023-12-18",
+          "2023-12-25",
+          "2024-01-01",
+          "2024-01-08",
+          "2024-01-15"
+        ],
+        "eval": "oos_holdout_id",
+        "note": "Shared holdout_id excludes holdout KPI from Meridian training (fair OOS KPI). Remaining Meridian design asymmetry: holdout media still enters Adstock for subsequent weeks (upstream Meridian behavior). TabFM never sees holdout rows as ICL context. MCMC here is directional PoC (tiny chains), not decision-grade.",
+        "mcmc_quality": "directional_poc_not_decision_grade",
         "deliverables": {
-          "expected_outcome": {
-            "n_times": 156,
-            "mean": 422351809.9117948,
-            "time_series_head": [
-              375893555.2,
-              376984333.44,
-              435434070.4,
-              402786794.24,
-              401397096.32
-            ],
-            "time_series_tail": [
-              426833184.64,
-              428910926.72,
-              415214339.2,
-              428888551.68,
-              425187153.92
-            ]
-          },
           "predictive_accuracy": [
             {
               "metric": "R_Squared",
               "geo_granularity": "national",
-              "value": 0.36103224754333496
+              "evaluation_set": "Train",
+              "value": 0.3305041790008545
+            },
+            {
+              "metric": "R_Squared",
+              "geo_granularity": "national",
+              "evaluation_set": "Test",
+              "value": 0.3821367025375366
+            },
+            {
+              "metric": "R_Squared",
+              "geo_granularity": "national",
+              "evaluation_set": "All Data",
+              "value": 0.35280001163482666
             },
             {
               "metric": "MAPE",
               "geo_granularity": "national",
-              "value": 0.043701548129320145
+              "evaluation_set": "Train",
+              "value": 0.04688714072108269
+            },
+            {
+              "metric": "MAPE",
+              "geo_granularity": "national",
+              "evaluation_set": "Test",
+              "value": 0.03792960196733475
+            },
+            {
+              "metric": "MAPE",
+              "geo_granularity": "national",
+              "evaluation_set": "All Data",
+              "value": 0.043901294469833374
             },
             {
               "metric": "wMAPE",
               "geo_granularity": "national",
-              "value": 0.043051593005657196
+              "evaluation_set": "Train",
+              "value": 0.046091143041849136
+            },
+            {
+              "metric": "wMAPE",
+              "geo_granularity": "national",
+              "evaluation_set": "Test",
+              "value": 0.03793574124574661
+            },
+            {
+              "metric": "wMAPE",
+              "geo_granularity": "national",
+              "evaluation_set": "All Data",
+              "value": 0.043345607817173004
             }
           ],
           "channel_contribution": {
-            "Channel0": 2831100584.96,
-            "Channel1": 2058342536.96,
-            "Channel2": 1536397622.4,
-            "Channel3": 5290175644.16,
-            "Channel4": 2635386885.12
+            "Channel0": 2701860815.36,
+            "Channel1": 2297464430.08,
+            "Channel2": 1310741236.48,
+            "Channel3": 5015777064.32,
+            "Channel4": 3037929028.48
           },
           "roi_by_channel": {
-            "Channel0": 69.90077748298646,
-            "Channel1": 65.71914224624634,
-            "Channel2": 127.192075881958,
-            "Channel3": 60.211167125701905,
-            "Channel4": 55.21366970062256
+            "Channel0": 66.70980474472046,
+            "Channel1": 73.35387134552002,
+            "Channel2": 108.51090957641601,
+            "Channel3": 57.08804412841797,
+            "Channel4": 63.647281608581544
           },
           "summary_metrics": [
             {
@@ -268,12 +394,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 3860178944.0,
-              "pct_of_contribution": 4.276246547698975,
-              "roi": 95.30907440185547,
-              "effectiveness": 0.6988748908042908,
-              "mroi": 40.190547943115234,
-              "cpik": 0.024886751547455788
+              "incremental_outcome": 3466454016.0,
+              "pct_of_contribution": 4.146051406860352,
+              "roi": 85.5878677368164,
+              "effectiveness": 0.6275920271873474,
+              "mroi": 42.19487762451172,
+              "cpik": 0.02460634894669056
             },
             {
               "channel": "Channel0",
@@ -284,12 +410,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 2831100416.0,
-              "pct_of_contribution": 4.296910285949707,
-              "roi": 69.90076446533203,
-              "effectiveness": 0.5125629901885986,
-              "mroi": 32.307186126708984,
-              "cpik": 0.027306141331791878
+              "incremental_outcome": 2701861120.0,
+              "pct_of_contribution": 4.109723091125488,
+              "roi": 66.70979309082031,
+              "effectiveness": 0.48916447162628174,
+              "mroi": 32.61030197143555,
+              "cpik": 0.03111543506383896
             },
             {
               "channel": "Channel0",
@@ -300,12 +426,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 2361162240.0,
-              "pct_of_contribution": 2.615658760070801,
-              "roi": 58.2978515625,
-              "effectiveness": 0.4274819493293762,
-              "mroi": 23.76828384399414,
-              "cpik": 0.017160186544060707
+              "incremental_outcome": 2275001600.0,
+              "pct_of_contribution": 2.721015214920044,
+              "roi": 56.17051696777344,
+              "effectiveness": 0.41188281774520874,
+              "mroi": 28.004589080810547,
+              "cpik": 0.01780322566628456
             },
             {
               "channel": "Channel0",
@@ -316,12 +442,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 1976518656.0,
-              "pct_of_contribution": 2.999866485595703,
-              "roi": 48.800880432128906,
-              "effectiveness": 0.357843279838562,
-              "mroi": 23.708080291748047,
-              "cpik": 0.020524751394987106
+              "incremental_outcome": 2193930240.0,
+              "pct_of_contribution": 3.3371241092681885,
+              "roi": 54.16883850097656,
+              "effectiveness": 0.39720508456230164,
+              "mroi": 19.615253448486328,
+              "cpik": 0.018591569736599922
             },
             {
               "channel": "Channel0",
@@ -332,12 +458,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 619772928.0,
-              "pct_of_contribution": 0.6865748167037964,
-              "roi": 15.302391052246094,
-              "effectiveness": 0.11220819503068924,
-              "mroi": 5.500829696655273,
-              "cpik": 0.003783395979553461
+              "incremental_outcome": 569949376.0,
+              "pct_of_contribution": 0.6816877722740173,
+              "roi": 14.07223129272461,
+              "effectiveness": 0.10318776965141296,
+              "mroi": 7.984390735626221,
+              "cpik": 0.004096342716366053
             },
             {
               "channel": "Channel0",
@@ -348,12 +474,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 743051008.0,
-              "pct_of_contribution": 1.127767562866211,
-              "roi": 18.346166610717773,
-              "effectiveness": 0.13452734053134918,
-              "mroi": 5.76287841796875,
-              "cpik": 0.005563476588577032
+              "incremental_outcome": 539597248.0,
+              "pct_of_contribution": 0.8207658529281616,
+              "roi": 13.32282829284668,
+              "effectiveness": 0.09769260883331299,
+              "mroi": 4.698239803314209,
+              "cpik": 0.006080195307731628
             },
             {
               "channel": "Channel0",
@@ -364,12 +490,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 10966513664.0,
-              "pct_of_contribution": 12.148533821105957,
-              "roi": 270.7667236328125,
-              "effectiveness": 1.9854573011398315,
-              "mroi": 116.38812255859375,
-              "cpik": 0.06581446528434753
+              "incremental_outcome": 9908917248.0,
+              "pct_of_contribution": 11.851558685302734,
+              "roi": 244.65432739257812,
+              "effectiveness": 1.7939823865890503,
+              "mroi": 127.10858154296875,
+              "cpik": 0.07150628417730331
             },
             {
               "channel": "Channel0",
@@ -380,12 +506,12 @@
               "spend": 40501704.0,
               "pct_of_spend": 18.452438354492188,
               "cpm": 7.3327226638793945,
-              "incremental_outcome": 7304123904.0,
-              "pct_of_contribution": 11.08585262298584,
-              "roi": 180.3411407470703,
-              "effectiveness": 1.3223916292190552,
-              "mroi": 86.52252197265625,
-              "cpik": 0.055202681571245193
+              "incremental_outcome": 6663328256.0,
+              "pct_of_contribution": 10.135396003723145,
+              "roi": 164.5196990966797,
+              "effectiveness": 1.2063772678375244,
+              "mroi": 92.51608276367188,
+              "cpik": 0.07529070228338242
             },
             {
               "channel": "Channel1",
@@ -396,12 +522,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 2301505792.0,
-              "pct_of_contribution": 2.549571990966797,
-              "roi": 73.48290252685547,
-              "effectiveness": 0.708465576171875,
-              "mroi": 32.933807373046875,
-              "cpik": 0.027063949033617973
+              "incremental_outcome": 2698901760.0,
+              "pct_of_contribution": 3.2280209064483643,
+              "roi": 86.17103576660156,
+              "effectiveness": 0.8307948112487793,
+              "mroi": 41.559295654296875,
+              "cpik": 0.024386616423726082
             },
             {
               "channel": "Channel1",
@@ -412,12 +538,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 2058342528.0,
-              "pct_of_contribution": 3.1240546703338623,
-              "roi": 65.71915435791016,
-              "effectiveness": 0.6336132287979126,
-              "mroi": 17.949888229370117,
-              "cpik": 0.028477339074015617
+              "incremental_outcome": 2297464576.0,
+              "pct_of_contribution": 3.4946069717407227,
+              "roi": 73.35388946533203,
+              "effectiveness": 0.7072213888168335,
+              "mroi": 29.679636001586914,
+              "cpik": 0.02174484170973301
             },
             {
               "channel": "Channel1",
@@ -428,12 +554,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 1759548160.0,
-              "pct_of_contribution": 1.94920015335083,
-              "roi": 56.17918395996094,
-              "effectiveness": 0.5416362881660461,
-              "mroi": 24.588483810424805,
-              "cpik": 0.017824921756982803
+              "incremental_outcome": 1532991744.0,
+              "pct_of_contribution": 1.8335344791412354,
+              "roi": 48.945648193359375,
+              "effectiveness": 0.47189611196517944,
+              "mroi": 23.415367126464844,
+              "cpik": 0.020451756194233894
             },
             {
               "channel": "Channel1",
@@ -444,12 +570,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 1572021504.0,
-              "pct_of_contribution": 2.385939598083496,
-              "roi": 50.191795349121094,
-              "effectiveness": 0.4839105010032654,
-              "mroi": 10.601180076599121,
-              "cpik": 0.019942782819271088
+              "incremental_outcome": 1683872512.0,
+              "pct_of_contribution": 2.5612897872924805,
+              "roi": 53.76299285888672,
+              "effectiveness": 0.5183412432670593,
+              "mroi": 22.925662994384766,
+              "cpik": 0.018600381910800934
             },
             {
               "channel": "Channel1",
@@ -460,12 +586,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 370147168.0,
-              "pct_of_contribution": 0.41004326939582825,
-              "roi": 11.818127632141113,
-              "effectiveness": 0.1139412671327591,
-              "mroi": 4.249422073364258,
-              "cpik": 0.006043237168341875
+              "incremental_outcome": 527848672.0,
+              "pct_of_contribution": 0.6313332915306091,
+              "roi": 16.85325050354004,
+              "effectiveness": 0.1624860316514969,
+              "mroi": 5.180161952972412,
+              "cpik": 0.0047116815112531185
             },
             {
               "channel": "Channel1",
@@ -476,12 +602,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 399282016.0,
-              "pct_of_contribution": 0.6060113310813904,
-              "roi": 12.748351097106934,
-              "effectiveness": 0.12290975451469421,
-              "mroi": 2.833956241607666,
-              "cpik": 0.005260566249489784
+              "incremental_outcome": 622928064.0,
+              "pct_of_contribution": 0.9475179314613342,
+              "roi": 19.88896369934082,
+              "effectiveness": 0.1917540282011032,
+              "mroi": 3.244394063949585,
+              "cpik": 0.0059568858705461025
             },
             {
               "channel": "Channel1",
@@ -492,12 +618,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 5196790784.0,
-              "pct_of_contribution": 5.756923675537109,
-              "roi": 165.92410278320312,
-              "effectiveness": 1.5997120141983032,
-              "mroi": 92.26875305175781,
-              "cpik": 0.08641849458217621
+              "incremental_outcome": 6648216064.0,
+              "pct_of_contribution": 7.951597690582275,
+              "roi": 212.26548767089844,
+              "effectiveness": 2.0464999675750732,
+              "mroi": 129.6816864013672,
+              "cpik": 0.05961255729198456
             },
             {
               "channel": "Channel1",
@@ -508,12 +634,12 @@
               "spend": 31320288.0,
               "pct_of_spend": 14.269417762756348,
               "cpm": 9.641227722167969,
-              "incremental_outcome": 5956489216.0,
-              "pct_of_contribution": 9.04047679901123,
-              "roi": 190.17990112304688,
-              "effectiveness": 1.8335676193237305,
-              "mroi": 51.02040481567383,
-              "cpik": 0.07897520810365677
+              "incremental_outcome": 5341806080.0,
+              "pct_of_contribution": 8.12526798248291,
+              "roi": 170.55418395996094,
+              "effectiveness": 1.6443517208099365,
+              "mroi": 75.72200012207031,
+              "cpik": 0.05033402889966965
             },
             {
               "channel": "Channel2",
@@ -524,12 +650,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 1222894464.0,
-              "pct_of_contribution": 1.3547030687332153,
-              "roi": 101.23844909667969,
-              "effectiveness": 0.7522950172424316,
-              "mroi": 40.38783264160156,
-              "cpik": 0.026688314974308014
+              "incremental_outcome": 1010280192.0,
+              "pct_of_contribution": 1.208345651626587,
+              "roi": 83.6369857788086,
+              "effectiveness": 0.6215000152587891,
+              "mroi": 34.590824127197266,
+              "cpik": 0.022925399243831635
             },
             {
               "channel": "Channel2",
@@ -540,12 +666,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 1536397696.0,
-              "pct_of_contribution": 2.331871509552002,
-              "roi": 127.19206237792969,
-              "effectiveness": 0.9451549053192139,
-              "mroi": 60.24591827392578,
-              "cpik": 0.019006473943591118
+              "incremental_outcome": 1310741504.0,
+              "pct_of_contribution": 1.9937307834625244,
+              "roi": 108.51092529296875,
+              "effectiveness": 0.8063364624977112,
+              "mroi": 51.263816833496094,
+              "cpik": 0.03130625933408737
             },
             {
               "channel": "Channel2",
@@ -556,12 +682,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 845731584.0,
-              "pct_of_contribution": 0.9368882775306702,
-              "roi": 70.01466369628906,
-              "effectiveness": 0.5202736854553223,
-              "mroi": 27.433528900146484,
-              "cpik": 0.014287110418081284
+              "incremental_outcome": 761839296.0,
+              "pct_of_contribution": 0.9111977219581604,
+              "roi": 63.069557189941406,
+              "effectiveness": 0.4686651825904846,
+              "mroi": 22.48690414428711,
+              "cpik": 0.01586068794131279
             },
             {
               "channel": "Channel2",
@@ -572,12 +698,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 1121606144.0,
-              "pct_of_contribution": 1.7023205757141113,
-              "roi": 92.85317993164062,
-              "effectiveness": 0.6899851560592651,
-              "mroi": 32.5198974609375,
-              "cpik": 0.010770152322947979
+              "incremental_outcome": 704923072.0,
+              "pct_of_contribution": 1.0722382068634033,
+              "roi": 58.35770034790039,
+              "effectiveness": 0.43365171551704407,
+              "mroi": 30.321895599365234,
+              "cpik": 0.017179235816001892
             },
             {
               "channel": "Channel2",
@@ -588,12 +714,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 129632040.0,
-              "pct_of_contribution": 0.1436043530702591,
-              "roi": 10.731706619262695,
-              "effectiveness": 0.07974651455879211,
-              "mroi": 3.377943277359009,
-              "cpik": 0.0034615586046129465
+              "incremental_outcome": 196390512.0,
+              "pct_of_contribution": 0.2348928451538086,
+              "roi": 16.25836753845215,
+              "effectiveness": 0.1208147183060646,
+              "mroi": 6.632621765136719,
+              "cpik": 0.004895874299108982
             },
             {
               "channel": "Channel2",
@@ -604,12 +730,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 195929872.0,
-              "pct_of_contribution": 0.29737305641174316,
-              "roi": 16.220233917236328,
-              "effectiveness": 0.1205313429236412,
-              "mroi": 6.723500728607178,
-              "cpik": 0.003116882871836424
+              "incremental_outcome": 101546144.0,
+              "pct_of_contribution": 0.1544589102268219,
+              "roi": 8.406590461730957,
+              "effectiveness": 0.062468744814395905,
+              "mroi": 3.7604010105133057,
+              "cpik": 0.0026378578040748835
             },
             {
               "channel": "Channel2",
@@ -620,12 +746,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 3565740032.0,
-              "pct_of_contribution": 3.950071334838867,
-              "roi": 295.19305419921875,
-              "effectiveness": 2.1935575008392334,
-              "mroi": 112.53339385986328,
-              "cpik": 0.0936737209558487
+              "incremental_outcome": 2482856704.0,
+              "pct_of_contribution": 2.9696202278137207,
+              "roi": 205.54556274414062,
+              "effectiveness": 1.5273938179016113,
+              "mroi": 103.07733154296875,
+              "cpik": 0.06169046089053154
             },
             {
               "channel": "Channel2",
@@ -636,12 +762,12 @@
               "spend": 12079350.0,
               "pct_of_spend": 5.5033111572265625,
               "cpm": 7.430925369262695,
-              "incremental_outcome": 3875857920.0,
-              "pct_of_contribution": 5.882593154907227,
-              "roi": 320.8664245605469,
-              "effectiveness": 2.3843345642089844,
-              "mroi": 189.65066528320312,
-              "cpik": 0.061652425676584244
+              "incremental_outcome": 4579504128.0,
+              "pct_of_contribution": 6.965752124786377,
+              "roi": 379.118408203125,
+              "effectiveness": 2.8172008991241455,
+              "mroi": 183.78094482421875,
+              "cpik": 0.11895457655191422
             },
             {
               "channel": "Channel3",
@@ -652,12 +778,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 9288263680.0,
-              "pct_of_contribution": 10.28939437866211,
-              "roi": 105.71617889404297,
-              "effectiveness": 0.8238298296928406,
-              "mroi": 54.33712387084961,
-              "cpik": 0.019837873056530952
+              "incremental_outcome": 7334150144.0,
+              "pct_of_contribution": 8.77200984954834,
+              "roi": 83.47506713867188,
+              "effectiveness": 0.6505081057548523,
+              "mroi": 36.060508728027344,
+              "cpik": 0.02928541973233223
             },
             {
               "channel": "Channel3",
@@ -668,12 +794,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 5290176512.0,
-              "pct_of_contribution": 8.029178619384766,
-              "roi": 60.21114730834961,
-              "effectiveness": 0.4692161977291107,
-              "mroi": 30.346254348754883,
-              "cpik": 0.02493659034371376
+              "incremental_outcome": 5015778304.0,
+              "pct_of_contribution": 7.629354476928711,
+              "roi": 57.088043212890625,
+              "effectiveness": 0.44487807154655457,
+              "mroi": 26.559064865112305,
+              "cpik": 0.03353947028517723
             },
             {
               "channel": "Channel3",
@@ -684,12 +810,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 6704323584.0,
-              "pct_of_contribution": 7.426944732666016,
-              "roi": 76.30656433105469,
-              "effectiveness": 0.5946450233459473,
-              "mroi": 35.78739929199219,
-              "cpik": 0.013105032965540886
+              "incremental_outcome": 4811581952.0,
+              "pct_of_contribution": 5.754891395568848,
+              "roi": 54.76395797729492,
+              "effectiveness": 0.42676687240600586,
+              "mroi": 23.40615463256836,
+              "cpik": 0.018262408673763275
             },
             {
               "channel": "Channel3",
@@ -700,12 +826,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 4964268544.0,
-              "pct_of_contribution": 7.534531593322754,
-              "roi": 56.501792907714844,
-              "effectiveness": 0.4403095245361328,
-              "mroi": 27.82830047607422,
-              "cpik": 0.017698634415864944
+              "incremental_outcome": 4053830144.0,
+              "pct_of_contribution": 6.166164398193359,
+              "roi": 46.13945770263672,
+              "effectiveness": 0.35955750942230225,
+              "mroi": 23.31524658203125,
+              "cpik": 0.021679703146219254
             },
             {
               "channel": "Channel3",
@@ -716,12 +842,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 1149346560.0,
-              "pct_of_contribution": 1.2732282876968384,
-              "roi": 13.081512451171875,
-              "effectiveness": 0.10194216668605804,
-              "mroi": 6.421042442321777,
-              "cpik": 0.0038314403500407934
+              "incremental_outcome": 942430080.0,
+              "pct_of_contribution": 1.1271933317184448,
+              "roi": 10.726451873779297,
+              "effectiveness": 0.08358954638242722,
+              "mroi": 4.849217891693115,
+              "cpik": 0.00403070030733943
             },
             {
               "channel": "Channel3",
@@ -732,12 +858,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 1488671616.0,
-              "pct_of_contribution": 2.2594351768493652,
-              "roi": 16.943605422973633,
-              "effectiveness": 0.13203884661197662,
-              "mroi": 6.524664878845215,
-              "cpik": 0.008446000516414642
+              "incremental_outcome": 796620800.0,
+              "pct_of_contribution": 1.2117170095443726,
+              "roi": 9.066895484924316,
+              "effectiveness": 0.07065688073635101,
+              "mroi": 3.3074185848236084,
+              "cpik": 0.00788817461580038
             },
             {
               "channel": "Channel3",
@@ -748,12 +874,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 22950610944.0,
-              "pct_of_contribution": 25.42432975769043,
-              "roi": 261.2168273925781,
-              "effectiveness": 2.0356216430664062,
-              "mroi": 172.77938842773438,
-              "cpik": 0.07649106532335281
+              "incremental_outcome": 21876125696.0,
+              "pct_of_contribution": 26.164936065673828,
+              "roi": 248.98739624023438,
+              "effectiveness": 1.9403194189071655,
+              "mroi": 114.88373565673828,
+              "cpik": 0.0976138561964035
             },
             {
               "channel": "Channel3",
@@ -764,12 +890,12 @@
               "spend": 87860376.0,
               "pct_of_spend": 40.02888870239258,
               "cpm": 7.792841911315918,
-              "incremental_outcome": 10417756160.0,
-              "pct_of_contribution": 15.811574935913086,
-              "roi": 118.57171630859375,
-              "effectiveness": 0.924010694026947,
-              "mroi": 67.9699478149414,
-              "cpik": 0.05948005989193916
+              "incremental_outcome": 11139376128.0,
+              "pct_of_contribution": 16.943784713745117,
+              "roi": 126.78498840332031,
+              "effectiveness": 0.988015353679657,
+              "mroi": 66.95014953613281,
+              "cpik": 0.11048585921525955
             },
             {
               "channel": "Channel4",
@@ -780,12 +906,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 5687727104.0,
-              "pct_of_contribution": 6.300775527954102,
-              "roi": 119.16287231445312,
-              "effectiveness": 0.9285068511962891,
-              "mroi": 59.07301330566406,
-              "cpik": 0.018390756100416183
+              "incremental_outcome": 5087585792.0,
+              "pct_of_contribution": 6.085005283355713,
+              "roi": 106.58936309814453,
+              "effectiveness": 0.8305351138114929,
+              "mroi": 49.748531341552734,
+              "cpik": 0.024588458240032196
             },
             {
               "channel": "Channel4",
@@ -796,12 +922,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 2635386624.0,
-              "pct_of_contribution": 3.9998650550842285,
-              "roi": 55.21365737915039,
-              "effectiveness": 0.43022021651268005,
-              "mroi": 27.511943817138672,
-              "cpik": 0.026709116995334625
+              "incremental_outcome": 3037929728.0,
+              "pct_of_contribution": 4.620906352996826,
+              "roi": 63.647274017333984,
+              "effectiveness": 0.49593421816825867,
+              "mroi": 28.89226722717285,
+              "cpik": 0.02707126922905445
             },
             {
               "channel": "Channel4",
@@ -812,12 +938,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 3470539776.0,
-              "pct_of_contribution": 3.8446099758148193,
-              "roi": 72.71086120605469,
-              "effectiveness": 0.5665568113327026,
-              "mroi": 33.75579071044922,
-              "cpik": 0.013753104954957962
+              "incremental_outcome": 2935377152.0,
+              "pct_of_contribution": 3.510857105255127,
+              "roi": 61.49872970581055,
+              "effectiveness": 0.479192852973938,
+              "mroi": 32.81919860839844,
+              "cpik": 0.016264816746115685
             },
             {
               "channel": "Channel4",
@@ -828,12 +954,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 2670583808.0,
-              "pct_of_contribution": 4.053285121917725,
-              "roi": 55.951072692871094,
-              "effectiveness": 0.43596595525741577,
-              "mroi": 24.697097778320312,
-              "cpik": 0.017877865582704544
+              "incremental_outcome": 2505119232.0,
+              "pct_of_contribution": 3.810464859008789,
+              "roi": 52.48444747924805,
+              "effectiveness": 0.40895432233810425,
+              "mroi": 21.835575103759766,
+              "cpik": 0.01909486949443817
             },
             {
               "channel": "Channel4",
@@ -844,12 +970,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 1095546496.0,
-              "pct_of_contribution": 1.2136293649673462,
-              "roi": 22.952659606933594,
-              "effectiveness": 0.17884516716003418,
-              "mroi": 8.410789489746094,
-              "cpik": 0.002651727059856057
+              "incremental_outcome": 617488256.0,
+              "pct_of_contribution": 0.7385466694831848,
+              "roi": 12.936920166015625,
+              "effectiveness": 0.10080337524414062,
+              "mroi": 6.08144998550415,
+              "cpik": 0.002448195591568947
             },
             {
               "channel": "Channel4",
@@ -860,12 +986,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 823305856.0,
-              "pct_of_contribution": 1.2495746612548828,
-              "roi": 17.248981475830078,
-              "effectiveness": 0.1344025880098343,
-              "mroi": 6.898746013641357,
-              "cpik": 0.009874191135168076
+              "incremental_outcome": 610827200.0,
+              "pct_of_contribution": 0.929111659526825,
+              "roi": 12.79736614227295,
+              "effectiveness": 0.09971598535776138,
+              "mroi": 6.057968616485596,
+              "cpik": 0.007107015699148178
             },
             {
               "channel": "Channel4",
@@ -876,12 +1002,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 18001545216.0,
-              "pct_of_contribution": 19.941831588745117,
-              "roi": 377.148193359375,
-              "effectiveness": 2.938706398010254,
-              "mroi": 206.26637268066406,
-              "cpik": 0.04377374425530434
+              "incremental_outcome": 19502094336.0,
+              "pct_of_contribution": 23.325475692749023,
+              "roi": 408.58599853515625,
+              "effectiveness": 3.1836671829223633,
+              "mroi": 165.343994140625,
+              "cpik": 0.07733664661645889
             },
             {
               "channel": "Channel4",
@@ -892,12 +1018,12 @@
               "spend": 47730696.0,
               "pct_of_spend": 21.745943069458008,
               "cpm": 7.791914463043213,
-              "incremental_outcome": 4856643072.0,
-              "pct_of_contribution": 7.371182441711426,
-              "roi": 101.75093841552734,
-              "effectiveness": 0.7928345799446106,
-              "mroi": 47.823516845703125,
-              "cpik": 0.061870135366916656
+              "incremental_outcome": 6720711168.0,
+              "pct_of_contribution": 10.222681045532227,
+              "roi": 140.8048095703125,
+              "effectiveness": 1.0971390008926392,
+              "mroi": 73.9315414428711,
+              "cpik": 0.07822126150131226
             },
             {
               "channel": "All Channels",
@@ -908,12 +1034,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 22360571904.0,
-              "pct_of_contribution": 24.770692825317383,
-              "roi": 101.87397766113281,
+              "incremental_outcome": 19597369344.0,
+              "pct_of_contribution": 23.439434051513672,
+              "roi": 89.28497314453125,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.01240947563201189
+              "cpik": 0.01441527996212244
             },
             {
               "channel": "All Channels",
@@ -924,12 +1050,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 14351401984.0,
-              "pct_of_contribution": 21.781879425048828,
-              "roi": 65.3844985961914,
+              "incremental_outcome": 14363771904.0,
+              "pct_of_contribution": 21.848318099975586,
+              "roi": 65.44084930419922,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.016942037269473076
+              "cpik": 0.01669611968100071
             },
             {
               "channel": "All Channels",
@@ -940,12 +1066,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 19184652288.0,
-              "pct_of_contribution": 21.252460479736328,
-              "roi": 87.40462493896484,
+              "incremental_outcome": 15992249344.0,
+              "pct_of_contribution": 19.127525329589844,
+              "roi": 72.86014556884766,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.011441723443567753
+              "cpik": 0.013725461438298225
             },
             {
               "channel": "All Channels",
@@ -956,12 +1082,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 14749349888.0,
-              "pct_of_contribution": 22.3858642578125,
-              "roi": 67.19754028320312,
+              "incremental_outcome": 13729568768.0,
+              "pct_of_contribution": 20.883651733398438,
+              "roi": 62.55145263671875,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.014883077703416348
+              "cpik": 0.016002248972654343
             },
             {
               "channel": "All Channels",
@@ -972,12 +1098,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 9247575040.0,
-              "pct_of_contribution": 10.244318962097168,
-              "roi": 42.13163757324219,
+              "incremental_outcome": 8221422592.0,
+              "pct_of_contribution": 9.833230972290039,
+              "roi": 37.45652389526367,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.005284270271658897
+              "cpik": 0.005900576710700989
             },
             {
               "channel": "All Channels",
@@ -988,12 +1114,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 7461736448.0,
-              "pct_of_contribution": 11.325069427490234,
-              "roi": 33.995418548583984,
+              "incremental_outcome": 9151358976.0,
+              "pct_of_contribution": 13.919867515563965,
+              "roi": 41.69327926635742,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.010295086540281773
+              "cpik": 0.010870813392102718
             },
             {
               "channel": "All Channels",
@@ -1004,12 +1130,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 41536950272.0,
-              "pct_of_contribution": 46.01398468017578,
-              "roi": 189.2409210205078,
+              "incremental_outcome": 37232349184.0,
+              "pct_of_contribution": 44.531742095947266,
+              "roi": 169.62933349609375,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.023762721568346024
+              "cpik": 0.026722311973571777
             },
             {
               "channel": "All Channels",
@@ -1020,12 +1146,12 @@
               "spend": 219492416.0,
               "pct_of_spend": 100.0,
               "cpm": 7.896059036254883,
-              "incremental_outcome": 21320732672.0,
-              "pct_of_contribution": 32.359596252441406,
-              "roi": 97.13653564453125,
+              "incremental_outcome": 20211357696.0,
+              "pct_of_contribution": 30.74291229248047,
+              "roi": 92.08226013183594,
               "effectiveness": NaN,
               "mroi": NaN,
-              "cpik": 0.029480090364813805
+              "cpik": 0.023984916508197784
             }
           ],
           "response_curves": {
@@ -1036,152 +1162,153 @@
                 "channel": "Channel0",
                 "metric": "mean",
                 "spend": 20250852.0,
-                "incremental_outcome": 1957692160.0
+                "incremental_outcome": 1830453760.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel0",
                 "metric": "ci_lo",
                 "spend": 20250852.0,
-                "incremental_outcome": 507493088.0
+                "incremental_outcome": 374938400.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel0",
                 "metric": "ci_hi",
                 "spend": 20250852.0,
-                "incremental_outcome": 4793442304.0
+                "incremental_outcome": 4309273088.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel1",
                 "metric": "mean",
                 "spend": 15660144.0,
-                "incremental_outcome": 1656787072.0
+                "incremental_outcome": 1667831552.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel1",
                 "metric": "ci_lo",
                 "spend": 15660144.0,
-                "incremental_outcome": 255396224.0
+                "incremental_outcome": 476601792.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel1",
                 "metric": "ci_hi",
                 "spend": 15660144.0,
-                "incremental_outcome": 5022084096.0
+                "incremental_outcome": 3575480832.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel2",
                 "metric": "mean",
                 "spend": 6039675.0,
-                "incremental_outcome": 1054582848.0
+                "incremental_outcome": 898825984.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel2",
                 "metric": "ci_lo",
                 "spend": 6039675.0,
-                "incremental_outcome": 129659760.0
+                "incremental_outcome": 70468080.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel2",
                 "metric": "ci_hi",
                 "spend": 6039675.0,
-                "incremental_outcome": 2638962432.0
+                "incremental_outcome": 3196864000.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel3",
                 "metric": "mean",
                 "spend": 43930188.0,
-                "incremental_outcome": 3567832320.0
+                "incremental_outcome": 3470480896.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel3",
                 "metric": "ci_lo",
                 "spend": 43930188.0,
-                "incremental_outcome": 940292928.0
+                "incremental_outcome": 542512000.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel3",
                 "metric": "ci_hi",
                 "spend": 43930188.0,
-                "incremental_outcome": 6750521344.0
+                "incremental_outcome": 7624461312.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel4",
                 "metric": "mean",
                 "spend": 23865348.0,
-                "incremental_outcome": 1774992640.0
+                "incremental_outcome": 2116513024.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel4",
                 "metric": "ci_lo",
                 "spend": 23865348.0,
-                "incremental_outcome": 525113856.0
+                "incremental_outcome": 370658624.0
               },
               {
                 "spend_multiplier": 0.5,
                 "channel": "Channel4",
                 "metric": "ci_hi",
                 "spend": 23865348.0,
-                "incremental_outcome": 3592795392.0
+                "incremental_outcome": 4711820288.0
               },
               {
                 "spend_multiplier": 0.75,
                 "channel": "Channel0",
                 "metric": "mean",
                 "spend": 30376278.0,
-                "incremental_outcome": 2456934912.0
+                "incremental_outcome": 2325934592.0
               },
               {
                 "spend_multiplier": 0.75,
                 "channel": "Channel0",
                 "metric": "ci_lo",
                 "spend": 30376278.0,
-                "incremental_outcome": 659572288.0
+                "incremental_outcome": 472543232.0
               },
               {
                 "spend_multiplier": 0.75,
                 "channel": "Channel0",
                 "metric": "ci_hi",
                 "spend": 30376278.0,
-                "incremental_outcome": 6217026560.0
+                "incremental_outcome": 5557967872.0
               },
               {
                 "spend_multiplier": 0.75,
                 "channel": "Channel1",
                 "metric": "mean",
                 "spend": 23490216.0,
-                "incremental_outcome": 1893468032.0
+                "incremental_outcome": 2030105344.0
               },
               {
                 "spend_multiplier": 0.75,
                 "channel": "Channel1",
                 "metric": "ci_lo",
                 "spend": 23490216.0,
-                "incremental_outcome": 334571040.0
+                "incremental_outcome": 560987456.0
               }
             ]
           },
           "budget_optimization": {
             "available_in_meridian": true,
             "extracted_in_this_poc": false,
-            "note": "Use meridian.analysis.optimizer in a full Meridian workflow; skipped here for PoC runtime."
+            "note": "meridian.analysis.optimizer skipped for PoC runtime."
           },
           "geo_insights": {
             "model": "national",
             "note": "National model \u2014 no geo-level Meridian insights in this run."
           },
+          "mcmc_quality": "directional_poc_not_decision_grade",
           "extraction_notes": []
         }
       }
@@ -1191,137 +1318,177 @@
     {
       "model": "TabFM",
       "mode": "tabfm",
-      "kpi_rmse": 24202848.098394077,
-      "kpi_mae": 18333722.761730775,
-      "kpi_r2": 0.22301465344568716,
-      "kpi_mape_pct": 4.30427332421602
+      "kpi_rmse": 24206506.082228128,
+      "kpi_mae": 18334324.607884623,
+      "kpi_r2": 0.22277977078985745,
+      "kpi_mape_pct": 4.3045385655369595
     },
     {
       "model": "Meridian",
       "mode": "meridian",
-      "kpi_rmse": 21050331.68869116,
-      "kpi_mae": 15850247.821730766,
-      "kpi_r2": 0.41224306119905063,
-      "kpi_mape_pct": 3.7248755167640097
+      "kpi_rmse": 21582723.66001628,
+      "kpi_mae": 16192536.694038462,
+      "kpi_r2": 0.38213673009005056,
+      "kpi_mape_pct": 3.79296068416703
     }
   ],
   "deliverables_matrix": [
     {
-      "meridian_deliverable": "Expected outcome / predictive fit",
-      "how_meridian_produces_it": "Analyzer.expected_outcome / predictive_accuracy \u2014 Bayesian posterior expected KPI given media, controls, and model structure (adstock, Hill, etc.).",
+      "meridian_deliverable": "Expected outcome / predictive KPI fit",
+      "how_meridian_produces_it": "ModelSpec.holdout_id + Analyzer.expected_outcome / predictive_accuracy \u2014 Bayesian posterior expected KPI; holdout KPI excluded from training.",
       "tabfm_equivalent": "Yes",
-      "tabfm_notes": "TabFMRegressor can predict a continuous KPI from tabular media/control features via ICL. Comparable only as a predictive score (RMSE/MAE/R\u00b2), not as a structural MMM fit."
+      "tabfm_notes": "TabFMRegressor can score holdout KPI from media/control features via ICL. Comparable only as predictive fit \u2014 not media decisioning."
     },
     {
       "meridian_deliverable": "Channel contribution (incremental outcome)",
-      "how_meridian_produces_it": "Analyzer.incremental_outcome \u2014 counterfactual E(Y|treatment) \u2212 E(Y|no treatment) under the fitted Bayesian MMM.",
-      "tabfm_equivalent": "Partial",
-      "tabfm_notes": "No native incremental contribution. Optional leave-one-channel ablation on predictions is a hacky sensitivity proxy \u2014 NOT Meridian-equivalent and not causal."
+      "how_meridian_produces_it": "Analyzer.incremental_outcome \u2014 structural counterfactual under the fitted MMM.",
+      "tabfm_equivalent": "No",
+      "tabfm_notes": "Meridian-only. TabFM has no incremental_outcome. Optional --ablation-proxy is a sensitivity hack \u2014 NOT Meridian-equivalent, not causal, excluded from headline results."
     },
     {
       "meridian_deliverable": "ROI / effectiveness by channel",
-      "how_meridian_produces_it": "Analyzer.roi / summary_metrics \u2014 incremental outcome \u00f7 spend with posterior uncertainty.",
+      "how_meridian_produces_it": "Analyzer.roi / summary_metrics",
       "tabfm_equivalent": "No",
-      "tabfm_notes": "TabFM has no spend\u2192outcome structural ROI. Dividing ablation deltas by spend would be misleading and is not implemented as a Meridian-equivalent deliverable."
+      "tabfm_notes": "Meridian-only product surface. No TabFM structural ROI."
     },
     {
       "meridian_deliverable": "Response curves (diminishing returns)",
-      "how_meridian_produces_it": "Analyzer.response_curves \u2014 Hill/saturation response under historical flighting with spend multipliers.",
+      "how_meridian_produces_it": "Analyzer.response_curves (Hill/saturation under flighting)",
       "tabfm_equivalent": "No",
-      "tabfm_notes": "Zero-shot tabular regression has no adstock/Hill media transform or native response-curve API."
+      "tabfm_notes": "Meridian-only. TabFM has no adstock/Hill response API."
     },
     {
       "meridian_deliverable": "Budget optimization / scenario planning",
-      "how_meridian_produces_it": "meridian.analysis.optimizer \u2014 allocate budget under response curves / ROI constraints.",
+      "how_meridian_produces_it": "meridian.analysis.optimizer",
       "tabfm_equivalent": "No",
-      "tabfm_notes": "No optimizer. Any grid-search over TabFM predictions would be an ad-hoc experiment, not Meridian budget optimization."
+      "tabfm_notes": "Meridian-only. No TabFM budget optimizer."
     },
     {
-      "meridian_deliverable": "Geo-level insights",
-      "how_meridian_produces_it": "Geo hierarchical Meridian model + Analyzer with selected_geos / geo aggregation flags.",
-      "tabfm_equivalent": "Partial",
-      "tabfm_notes": "TabFM can take geo-week rows as tabular features and predict KPI per row, but it does not provide hierarchical geo shrinkage, geo ROI, or Meridian geo posteriors."
+      "meridian_deliverable": "Geo-level media decisioning",
+      "how_meridian_produces_it": "Geo hierarchical Meridian + Analyzer geo views",
+      "tabfm_equivalent": "No",
+      "tabfm_notes": "Meridian-only for geo ROI/contribution. TabFM may score geo-week rows as tabular prediction, but that is not hierarchical geo MMM decisioning."
     }
   ],
   "deliverables_capability_summary": {
     "counts": {
       "Yes": 1,
-      "Partial": 2,
-      "No": 3
+      "Partial": 0,
+      "No": 5
     },
-    "headline": "TabFM can match Meridian on predictive KPI scoring only. Contribution/ROI/response curves/budget optimization are MMM-structural and are not native TabFM deliverables.",
+    "headline": "Practitioner takeaway: predictive fit \u2260 media decisioning. TabFM can match Meridian on holdout KPI prediction only. Contribution, ROI, response curves, budget optimization, and geo decisioning are Meridian-only (hard No for TabFM).",
     "rows": [
       {
-        "meridian_deliverable": "Expected outcome / predictive fit",
-        "how_meridian_produces_it": "Analyzer.expected_outcome / predictive_accuracy \u2014 Bayesian posterior expected KPI given media, controls, and model structure (adstock, Hill, etc.).",
+        "meridian_deliverable": "Expected outcome / predictive KPI fit",
+        "how_meridian_produces_it": "ModelSpec.holdout_id + Analyzer.expected_outcome / predictive_accuracy \u2014 Bayesian posterior expected KPI; holdout KPI excluded from training.",
         "tabfm_equivalent": "Yes",
-        "tabfm_notes": "TabFMRegressor can predict a continuous KPI from tabular media/control features via ICL. Comparable only as a predictive score (RMSE/MAE/R\u00b2), not as a structural MMM fit."
+        "tabfm_notes": "TabFMRegressor can score holdout KPI from media/control features via ICL. Comparable only as predictive fit \u2014 not media decisioning."
       },
       {
         "meridian_deliverable": "Channel contribution (incremental outcome)",
-        "how_meridian_produces_it": "Analyzer.incremental_outcome \u2014 counterfactual E(Y|treatment) \u2212 E(Y|no treatment) under the fitted Bayesian MMM.",
-        "tabfm_equivalent": "Partial",
-        "tabfm_notes": "No native incremental contribution. Optional leave-one-channel ablation on predictions is a hacky sensitivity proxy \u2014 NOT Meridian-equivalent and not causal."
+        "how_meridian_produces_it": "Analyzer.incremental_outcome \u2014 structural counterfactual under the fitted MMM.",
+        "tabfm_equivalent": "No",
+        "tabfm_notes": "Meridian-only. TabFM has no incremental_outcome. Optional --ablation-proxy is a sensitivity hack \u2014 NOT Meridian-equivalent, not causal, excluded from headline results."
       },
       {
         "meridian_deliverable": "ROI / effectiveness by channel",
-        "how_meridian_produces_it": "Analyzer.roi / summary_metrics \u2014 incremental outcome \u00f7 spend with posterior uncertainty.",
+        "how_meridian_produces_it": "Analyzer.roi / summary_metrics",
         "tabfm_equivalent": "No",
-        "tabfm_notes": "TabFM has no spend\u2192outcome structural ROI. Dividing ablation deltas by spend would be misleading and is not implemented as a Meridian-equivalent deliverable."
+        "tabfm_notes": "Meridian-only product surface. No TabFM structural ROI."
       },
       {
         "meridian_deliverable": "Response curves (diminishing returns)",
-        "how_meridian_produces_it": "Analyzer.response_curves \u2014 Hill/saturation response under historical flighting with spend multipliers.",
+        "how_meridian_produces_it": "Analyzer.response_curves (Hill/saturation under flighting)",
         "tabfm_equivalent": "No",
-        "tabfm_notes": "Zero-shot tabular regression has no adstock/Hill media transform or native response-curve API."
+        "tabfm_notes": "Meridian-only. TabFM has no adstock/Hill response API."
       },
       {
         "meridian_deliverable": "Budget optimization / scenario planning",
-        "how_meridian_produces_it": "meridian.analysis.optimizer \u2014 allocate budget under response curves / ROI constraints.",
+        "how_meridian_produces_it": "meridian.analysis.optimizer",
         "tabfm_equivalent": "No",
-        "tabfm_notes": "No optimizer. Any grid-search over TabFM predictions would be an ad-hoc experiment, not Meridian budget optimization."
+        "tabfm_notes": "Meridian-only. No TabFM budget optimizer."
       },
       {
-        "meridian_deliverable": "Geo-level insights",
-        "how_meridian_produces_it": "Geo hierarchical Meridian model + Analyzer with selected_geos / geo aggregation flags.",
-        "tabfm_equivalent": "Partial",
-        "tabfm_notes": "TabFM can take geo-week rows as tabular features and predict KPI per row, but it does not provide hierarchical geo shrinkage, geo ROI, or Meridian geo posteriors."
+        "meridian_deliverable": "Geo-level media decisioning",
+        "how_meridian_produces_it": "Geo hierarchical Meridian + Analyzer geo views",
+        "tabfm_equivalent": "No",
+        "tabfm_notes": "Meridian-only for geo ROI/contribution. TabFM may score geo-week rows as tabular prediction, but that is not hierarchical geo MMM decisioning."
       }
     ]
   },
   "deliverable_tables": {
-    "meridian": {
+    "meridian_only_product_surface": {
       "mode": "meridian",
+      "mcmc_quality": "directional_poc_not_decision_grade",
       "predictive_accuracy": [
         {
           "metric": "R_Squared",
           "geo_granularity": "national",
-          "value": 0.36103224754333496
+          "evaluation_set": "Train",
+          "value": 0.3305041790008545
+        },
+        {
+          "metric": "R_Squared",
+          "geo_granularity": "national",
+          "evaluation_set": "Test",
+          "value": 0.3821367025375366
+        },
+        {
+          "metric": "R_Squared",
+          "geo_granularity": "national",
+          "evaluation_set": "All Data",
+          "value": 0.35280001163482666
         },
         {
           "metric": "MAPE",
           "geo_granularity": "national",
-          "value": 0.043701548129320145
+          "evaluation_set": "Train",
+          "value": 0.04688714072108269
+        },
+        {
+          "metric": "MAPE",
+          "geo_granularity": "national",
+          "evaluation_set": "Test",
+          "value": 0.03792960196733475
+        },
+        {
+          "metric": "MAPE",
+          "geo_granularity": "national",
+          "evaluation_set": "All Data",
+          "value": 0.043901294469833374
         },
         {
           "metric": "wMAPE",
           "geo_granularity": "national",
-          "value": 0.043051593005657196
+          "evaluation_set": "Train",
+          "value": 0.046091143041849136
+        },
+        {
+          "metric": "wMAPE",
+          "geo_granularity": "national",
+          "evaluation_set": "Test",
+          "value": 0.03793574124574661
+        },
+        {
+          "metric": "wMAPE",
+          "geo_granularity": "national",
+          "evaluation_set": "All Data",
+          "value": 0.043345607817173004
         }
       ],
       "channel_contribution": {
-        "Channel0": 2831100584.96,
-        "Channel1": 2058342536.96,
-        "Channel2": 1536397622.4,
-        "Channel3": 5290175644.16,
-        "Channel4": 2635386885.12
+        "Channel0": 2701860815.36,
+        "Channel1": 2297464430.08,
+        "Channel2": 1310741236.48,
+        "Channel3": 5015777064.32,
+        "Channel4": 3037929028.48
       },
       "roi_by_channel": {
-        "Channel0": 69.90077748298646,
-        "Channel1": 65.71914224624634,
-        "Channel2": 127.192075881958,
-        "Channel3": 60.211167125701905,
-        "Channel4": 55.21366970062256
+        "Channel0": 66.70980474472046,
+        "Channel1": 73.35387134552002,
+        "Channel2": 108.51090957641601,
+        "Channel3": 57.08804412841797,
+        "Channel4": 63.647281608581544
       },
       "summary_metrics_preview": [
         {
@@ -1333,12 +1500,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 3860178944.0,
-          "pct_of_contribution": 4.276246547698975,
-          "roi": 95.30907440185547,
-          "effectiveness": 0.6988748908042908,
-          "mroi": 40.190547943115234,
-          "cpik": 0.024886751547455788
+          "incremental_outcome": 3466454016.0,
+          "pct_of_contribution": 4.146051406860352,
+          "roi": 85.5878677368164,
+          "effectiveness": 0.6275920271873474,
+          "mroi": 42.19487762451172,
+          "cpik": 0.02460634894669056
         },
         {
           "channel": "Channel0",
@@ -1349,12 +1516,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 2831100416.0,
-          "pct_of_contribution": 4.296910285949707,
-          "roi": 69.90076446533203,
-          "effectiveness": 0.5125629901885986,
-          "mroi": 32.307186126708984,
-          "cpik": 0.027306141331791878
+          "incremental_outcome": 2701861120.0,
+          "pct_of_contribution": 4.109723091125488,
+          "roi": 66.70979309082031,
+          "effectiveness": 0.48916447162628174,
+          "mroi": 32.61030197143555,
+          "cpik": 0.03111543506383896
         },
         {
           "channel": "Channel0",
@@ -1365,12 +1532,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 2361162240.0,
-          "pct_of_contribution": 2.615658760070801,
-          "roi": 58.2978515625,
-          "effectiveness": 0.4274819493293762,
-          "mroi": 23.76828384399414,
-          "cpik": 0.017160186544060707
+          "incremental_outcome": 2275001600.0,
+          "pct_of_contribution": 2.721015214920044,
+          "roi": 56.17051696777344,
+          "effectiveness": 0.41188281774520874,
+          "mroi": 28.004589080810547,
+          "cpik": 0.01780322566628456
         },
         {
           "channel": "Channel0",
@@ -1381,12 +1548,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 1976518656.0,
-          "pct_of_contribution": 2.999866485595703,
-          "roi": 48.800880432128906,
-          "effectiveness": 0.357843279838562,
-          "mroi": 23.708080291748047,
-          "cpik": 0.020524751394987106
+          "incremental_outcome": 2193930240.0,
+          "pct_of_contribution": 3.3371241092681885,
+          "roi": 54.16883850097656,
+          "effectiveness": 0.39720508456230164,
+          "mroi": 19.615253448486328,
+          "cpik": 0.018591569736599922
         },
         {
           "channel": "Channel0",
@@ -1397,12 +1564,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 619772928.0,
-          "pct_of_contribution": 0.6865748167037964,
-          "roi": 15.302391052246094,
-          "effectiveness": 0.11220819503068924,
-          "mroi": 5.500829696655273,
-          "cpik": 0.003783395979553461
+          "incremental_outcome": 569949376.0,
+          "pct_of_contribution": 0.6816877722740173,
+          "roi": 14.07223129272461,
+          "effectiveness": 0.10318776965141296,
+          "mroi": 7.984390735626221,
+          "cpik": 0.004096342716366053
         },
         {
           "channel": "Channel0",
@@ -1413,12 +1580,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 743051008.0,
-          "pct_of_contribution": 1.127767562866211,
-          "roi": 18.346166610717773,
-          "effectiveness": 0.13452734053134918,
-          "mroi": 5.76287841796875,
-          "cpik": 0.005563476588577032
+          "incremental_outcome": 539597248.0,
+          "pct_of_contribution": 0.8207658529281616,
+          "roi": 13.32282829284668,
+          "effectiveness": 0.09769260883331299,
+          "mroi": 4.698239803314209,
+          "cpik": 0.006080195307731628
         },
         {
           "channel": "Channel0",
@@ -1429,12 +1596,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 10966513664.0,
-          "pct_of_contribution": 12.148533821105957,
-          "roi": 270.7667236328125,
-          "effectiveness": 1.9854573011398315,
-          "mroi": 116.38812255859375,
-          "cpik": 0.06581446528434753
+          "incremental_outcome": 9908917248.0,
+          "pct_of_contribution": 11.851558685302734,
+          "roi": 244.65432739257812,
+          "effectiveness": 1.7939823865890503,
+          "mroi": 127.10858154296875,
+          "cpik": 0.07150628417730331
         },
         {
           "channel": "Channel0",
@@ -1445,12 +1612,12 @@
           "spend": 40501704.0,
           "pct_of_spend": 18.452438354492188,
           "cpm": 7.3327226638793945,
-          "incremental_outcome": 7304123904.0,
-          "pct_of_contribution": 11.08585262298584,
-          "roi": 180.3411407470703,
-          "effectiveness": 1.3223916292190552,
-          "mroi": 86.52252197265625,
-          "cpik": 0.055202681571245193
+          "incremental_outcome": 6663328256.0,
+          "pct_of_contribution": 10.135396003723145,
+          "roi": 164.5196990966797,
+          "effectiveness": 1.2063772678375244,
+          "mroi": 92.51608276367188,
+          "cpik": 0.07529070228338242
         },
         {
           "channel": "Channel1",
@@ -1461,12 +1628,12 @@
           "spend": 31320288.0,
           "pct_of_spend": 14.269417762756348,
           "cpm": 9.641227722167969,
-          "incremental_outcome": 2301505792.0,
-          "pct_of_contribution": 2.549571990966797,
-          "roi": 73.48290252685547,
-          "effectiveness": 0.708465576171875,
-          "mroi": 32.933807373046875,
-          "cpik": 0.027063949033617973
+          "incremental_outcome": 2698901760.0,
+          "pct_of_contribution": 3.2280209064483643,
+          "roi": 86.17103576660156,
+          "effectiveness": 0.8307948112487793,
+          "mroi": 41.559295654296875,
+          "cpik": 0.024386616423726082
         },
         {
           "channel": "Channel1",
@@ -1477,12 +1644,12 @@
           "spend": 31320288.0,
           "pct_of_spend": 14.269417762756348,
           "cpm": 9.641227722167969,
-          "incremental_outcome": 2058342528.0,
-          "pct_of_contribution": 3.1240546703338623,
-          "roi": 65.71915435791016,
-          "effectiveness": 0.6336132287979126,
-          "mroi": 17.949888229370117,
-          "cpik": 0.028477339074015617
+          "incremental_outcome": 2297464576.0,
+          "pct_of_contribution": 3.4946069717407227,
+          "roi": 73.35388946533203,
+          "effectiveness": 0.7072213888168335,
+          "mroi": 29.679636001586914,
+          "cpik": 0.02174484170973301
         },
         {
           "channel": "Channel1",
@@ -1493,12 +1660,12 @@
           "spend": 31320288.0,
           "pct_of_spend": 14.269417762756348,
           "cpm": 9.641227722167969,
-          "incremental_outcome": 1759548160.0,
-          "pct_of_contribution": 1.94920015335083,
-          "roi": 56.17918395996094,
-          "effectiveness": 0.5416362881660461,
-          "mroi": 24.588483810424805,
-          "cpik": 0.017824921756982803
+          "incremental_outcome": 1532991744.0,
+          "pct_of_contribution": 1.8335344791412354,
+          "roi": 48.945648193359375,
+          "effectiveness": 0.47189611196517944,
+          "mroi": 23.415367126464844,
+          "cpik": 0.020451756194233894
         },
         {
           "channel": "Channel1",
@@ -1509,12 +1676,12 @@
           "spend": 31320288.0,
           "pct_of_spend": 14.269417762756348,
           "cpm": 9.641227722167969,
-          "incremental_outcome": 1572021504.0,
-          "pct_of_contribution": 2.385939598083496,
-          "roi": 50.191795349121094,
-          "effectiveness": 0.4839105010032654,
-          "mroi": 10.601180076599121,
-          "cpik": 0.019942782819271088
+          "incremental_outcome": 1683872512.0,
+          "pct_of_contribution": 2.5612897872924805,
+          "roi": 53.76299285888672,
+          "effectiveness": 0.5183412432670593,
+          "mroi": 22.925662994384766,
+          "cpik": 0.018600381910800934
         },
         {
           "channel": "Channel1",
@@ -1525,12 +1692,12 @@
           "spend": 31320288.0,
           "pct_of_spend": 14.269417762756348,
           "cpm": 9.641227722167969,
-          "incremental_outcome": 370147168.0,
-          "pct_of_contribution": 0.41004326939582825,
-          "roi": 11.818127632141113,
-          "effectiveness": 0.1139412671327591,
-          "mroi": 4.249422073364258,
-          "cpik": 0.006043237168341875
+          "incremental_outcome": 527848672.0,
+          "pct_of_contribution": 0.6313332915306091,
+          "roi": 16.85325050354004,
+          "effectiveness": 0.1624860316514969,
+          "mroi": 5.180161952972412,
+          "cpik": 0.0047116815112531185
         },
         {
           "channel": "Channel1",
@@ -1541,12 +1708,12 @@
           "spend": 31320288.0,
           "pct_of_spend": 14.269417762756348,
           "cpm": 9.641227722167969,
-          "incremental_outcome": 399282016.0,
-          "pct_of_contribution": 0.6060113310813904,
-          "roi": 12.748351097106934,
-          "effectiveness": 0.12290975451469421,
-          "mroi": 2.833956241607666,
-          "cpik": 0.005260566249489784
+          "incremental_outcome": 622928064.0,
+          "pct_of_contribution": 0.9475179314613342,
+          "roi": 19.88896369934082,
+          "effectiveness": 0.1917540282011032,
+          "mroi": 3.244394063949585,
+          "cpik": 0.0059568858705461025
         },
         {
           "channel": "Channel1",
@@ -1557,12 +1724,12 @@
           "spend": 31320288.0,
           "pct_of_spend": 14.269417762756348,
           "cpm": 9.641227722167969,
-          "incremental_outcome": 5196790784.0,
-          "pct_of_contribution": 5.756923675537109,
-          "roi": 165.92410278320312,
-          "effectiveness": 1.5997120141983032,
-          "mroi": 92.26875305175781,
-          "cpik": 0.08641849458217621
+          "incremental_outcome": 6648216064.0,
+          "pct_of_contribution": 7.951597690582275,
+          "roi": 212.26548767089844,
+          "effectiveness": 2.0464999675750732,
+          "mroi": 129.6816864013672,
+          "cpik": 0.05961255729198456
         }
       ],
       "response_curves": {
@@ -1573,147 +1740,147 @@
             "channel": "Channel0",
             "metric": "mean",
             "spend": 20250852.0,
-            "incremental_outcome": 1957692160.0
+            "incremental_outcome": 1830453760.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel0",
             "metric": "ci_lo",
             "spend": 20250852.0,
-            "incremental_outcome": 507493088.0
+            "incremental_outcome": 374938400.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel0",
             "metric": "ci_hi",
             "spend": 20250852.0,
-            "incremental_outcome": 4793442304.0
+            "incremental_outcome": 4309273088.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel1",
             "metric": "mean",
             "spend": 15660144.0,
-            "incremental_outcome": 1656787072.0
+            "incremental_outcome": 1667831552.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel1",
             "metric": "ci_lo",
             "spend": 15660144.0,
-            "incremental_outcome": 255396224.0
+            "incremental_outcome": 476601792.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel1",
             "metric": "ci_hi",
             "spend": 15660144.0,
-            "incremental_outcome": 5022084096.0
+            "incremental_outcome": 3575480832.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel2",
             "metric": "mean",
             "spend": 6039675.0,
-            "incremental_outcome": 1054582848.0
+            "incremental_outcome": 898825984.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel2",
             "metric": "ci_lo",
             "spend": 6039675.0,
-            "incremental_outcome": 129659760.0
+            "incremental_outcome": 70468080.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel2",
             "metric": "ci_hi",
             "spend": 6039675.0,
-            "incremental_outcome": 2638962432.0
+            "incremental_outcome": 3196864000.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel3",
             "metric": "mean",
             "spend": 43930188.0,
-            "incremental_outcome": 3567832320.0
+            "incremental_outcome": 3470480896.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel3",
             "metric": "ci_lo",
             "spend": 43930188.0,
-            "incremental_outcome": 940292928.0
+            "incremental_outcome": 542512000.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel3",
             "metric": "ci_hi",
             "spend": 43930188.0,
-            "incremental_outcome": 6750521344.0
+            "incremental_outcome": 7624461312.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel4",
             "metric": "mean",
             "spend": 23865348.0,
-            "incremental_outcome": 1774992640.0
+            "incremental_outcome": 2116513024.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel4",
             "metric": "ci_lo",
             "spend": 23865348.0,
-            "incremental_outcome": 525113856.0
+            "incremental_outcome": 370658624.0
           },
           {
             "spend_multiplier": 0.5,
             "channel": "Channel4",
             "metric": "ci_hi",
             "spend": 23865348.0,
-            "incremental_outcome": 3592795392.0
+            "incremental_outcome": 4711820288.0
           },
           {
             "spend_multiplier": 0.75,
             "channel": "Channel0",
             "metric": "mean",
             "spend": 30376278.0,
-            "incremental_outcome": 2456934912.0
+            "incremental_outcome": 2325934592.0
           },
           {
             "spend_multiplier": 0.75,
             "channel": "Channel0",
             "metric": "ci_lo",
             "spend": 30376278.0,
-            "incremental_outcome": 659572288.0
+            "incremental_outcome": 472543232.0
           },
           {
             "spend_multiplier": 0.75,
             "channel": "Channel0",
             "metric": "ci_hi",
             "spend": 30376278.0,
-            "incremental_outcome": 6217026560.0
+            "incremental_outcome": 5557967872.0
           },
           {
             "spend_multiplier": 0.75,
             "channel": "Channel1",
             "metric": "mean",
             "spend": 23490216.0,
-            "incremental_outcome": 1893468032.0
+            "incremental_outcome": 2030105344.0
           },
           {
             "spend_multiplier": 0.75,
             "channel": "Channel1",
             "metric": "ci_lo",
             "spend": 23490216.0,
-            "incremental_outcome": 334571040.0
+            "incremental_outcome": 560987456.0
           }
         ]
       },
       "budget_optimization": {
         "available_in_meridian": true,
         "extracted_in_this_poc": false,
-        "note": "Use meridian.analysis.optimizer in a full Meridian workflow; skipped here for PoC runtime."
+        "note": "meridian.analysis.optimizer skipped for PoC runtime."
       },
       "geo_insights": {
         "model": "national",
@@ -1723,21 +1890,9 @@
     },
     "tabfm": {
       "mode": "tabfm",
-      "channel_contribution_ablation_proxy": {
-        "method": "leave-one-channel ablation (hacky proxy)",
-        "values": {
-          "Channel0": 2629688.0,
-          "Channel1": 66320.61538461539,
-          "Channel2": 0.0,
-          "Channel3": 2190089.230769231,
-          "Channel4": 8403350.76923077
-        },
-        "meridian_equivalent": false
-      },
-      "roi_by_channel": null,
-      "response_curves": null,
-      "budget_optimization": null,
-      "honesty": "TabFM is a tabular ICL regressor, not an MMM. Only predictive KPI is a Yes; other Meridian deliverables are Partial/No \u2014 see deliverables matrix."
+      "predictive_kpi_only": true,
+      "honesty": "TabFM is a tabular ICL regressor, not an MMM. Predictive KPI is the only comparable deliverable. Contribution / ROI / curves / budget / geo decisioning are Meridian-only product surface (hard No for TabFM).",
+      "ablation_proxy_NOT_meridian_equivalent": null
     }
   }
 }

@@ -1,4 +1,4 @@
-"""Meridian baseline with deliverable extraction + Meridian-style proxy fallback."""
+"""Meridian baseline with shared holdout_id OOS scoring + Meridian-style proxy."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ import pandas as pd
 from sklearn.linear_model import Ridge
 
 from mmm_compare.data import MMMDataset
-from mmm_compare.metrics import contribution_recovery_metrics, regression_metrics
-from mmm_compare.tabfm_runner import ModelResult, _true_holdout_contributions
+from mmm_compare.metrics import regression_metrics
+from mmm_compare.tabfm_runner import ModelResult
 
 logger = logging.getLogger(__name__)
 
@@ -45,57 +45,40 @@ def _media_design_matrix(df: pd.DataFrame, channel_keys: list[str]) -> tuple[pd.
         if c.endswith("_control") or c in ("Promo", "promo_control") or c.startswith("Organic_"):
             if pd.api.types.is_numeric_dtype(df[c]):
                 parts[c] = df[c].to_numpy(dtype=float)
-    X = pd.DataFrame(parts, index=df.index)
-    return X, media_cols
+    return pd.DataFrame(parts, index=df.index), media_cols
 
 
 def run_meridian_style(data: MMMDataset) -> ModelResult:
-    """Lightweight media-mix style proxy (adstock + Hill + Ridge) — not full Meridian."""
+    """Adstock + Hill + Ridge on the same train/holdout split (not Bayesian Meridian)."""
     X_all, media_cols = _media_design_matrix(data.frame, data.channel_keys)
+    # Use full Meridian train weeks (not TabFM context cap) for the style proxy.
     model = Ridge(alpha=1.0, fit_intercept=True)
-    model.fit(X_all.loc[data.train_idx], data.y_train)
+    model.fit(X_all.loc[data.train_idx], data.frame.loc[data.train_idx, data.kpi_col])
     pred = model.predict(X_all.loc[data.test_idx])
-    metrics = regression_metrics(data.y_test, pred)
-
-    contrib: dict[str, float] = {}
-    coef_map = dict(zip(X_all.columns, model.coef_))
-    X_test = X_all.loc[data.test_idx]
-    for key in data.channel_keys:
-        col = f"{key}_media_transform"
-        if col in coef_map:
-            contrib[key] = float(np.mean(np.maximum(coef_map[col] * X_test[col].to_numpy(), 0.0)))
-
-    true_c = _true_holdout_contributions(data)
-    c_metrics = contribution_recovery_metrics(true_c, contrib) if true_c else {}
-
-    # Proxy "ROI-like" = mean positive coef contribution / mean spend (NOT Meridian ROI)
-    proxy_roi = {}
-    for key, cval in contrib.items():
-        spend_col = f"{key}_spend"
-        if spend_col in data.frame.columns:
-            spend = float(data.frame.loc[data.test_idx, spend_col].mean())
-            proxy_roi[key] = float(cval / spend) if spend > 0 else float("nan")
-
+    y_test = data.frame.loc[data.test_idx, data.kpi_col]
+    metrics = regression_metrics(y_test, pred)
     return ModelResult(
         name="Meridian-style baseline",
         mode="meridian_style",
         y_pred_test=np.asarray(pred, dtype=float),
         metrics=metrics,
-        contribution_pred=contrib,
-        contribution_metrics=c_metrics,
+        contribution_pred={},
+        contribution_metrics={},
         extras={
             "note": (
-                "Proxy: geometric adstock + Hill saturation + Ridge. "
-                "Not full Google Meridian Bayesian MCMC. Proxy ROI is NOT Meridian ROI."
+                "Proxy: geometric adstock + Hill + Ridge on the shared time holdout. "
+                "Not full Google Meridian MCMC. No Meridian ROI/contribution tables."
             ),
             "media_cols": media_cols,
+            "holdout_times": data.holdout_times,
+            "eval": "oos_holdout_same_as_tabfm",
             "deliverables": {
-                "expected_outcome": "proxy holdout predictions only",
-                "channel_contribution": contrib,
-                "roi_by_channel_proxy": proxy_roi,
+                "predictive_kpi": "holdout predictions from style proxy",
+                "channel_contribution": None,
+                "roi_by_channel": None,
                 "response_curves": None,
                 "budget_optimization": None,
-                "geo_insights": None,
+                "mcmc_quality": "n/a (not Meridian)",
             },
         },
     )
@@ -146,10 +129,9 @@ def _build_meridian_input(data: MMMDataset):
     organic_cols = [c for c in df.columns if c.startswith("Organic_") and c.endswith("_impression")]
     organic_channels = [c.replace("_impression", "") for c in organic_cols]
 
-    kpi_col = data.kpi_col
     builder = data_frame_input_data_builder.DataFrameInputDataBuilder(
         kpi_type="non_revenue",
-        default_kpi_column=kpi_col,
+        default_kpi_column=data.kpi_col,
         default_revenue_per_kpi_column="revenue_per_conversion",
     )
     builder = builder.with_kpi(df).with_revenue_per_kpi(df)
@@ -175,37 +157,27 @@ def _build_meridian_input(data: MMMDataset):
 
 
 def _extract_deliverables(ana, channels: list[str]) -> dict[str, Any]:
-    """Pull Meridian Analyzer artifacts; best-effort for PoC."""
+    """Meridian-only product surface (directional PoC MCMC — not decision-grade)."""
     out: dict[str, Any] = {
-        "expected_outcome": None,
         "predictive_accuracy": None,
         "channel_contribution": {},
         "roi_by_channel": {},
         "summary_metrics": None,
         "response_curves": None,
-        "budget_optimization": None,
+        "budget_optimization": {
+            "available_in_meridian": True,
+            "extracted_in_this_poc": False,
+            "note": "meridian.analysis.optimizer skipped for PoC runtime.",
+        },
         "geo_insights": None,
+        "mcmc_quality": "directional_poc_not_decision_grade",
         "extraction_notes": [],
     }
-
     try:
         pa = ana.predictive_accuracy(use_kpi=True)
         out["predictive_accuracy"] = _xr_to_records(pa)
     except Exception as exc:
         out["extraction_notes"].append(f"predictive_accuracy: {exc}")
-
-    try:
-        expected = ana.expected_outcome(aggregate_times=False, aggregate_geos=True, use_kpi=True)
-        ts = _posterior_mean(expected)
-        out["expected_outcome"] = {
-            "n_times": int(len(ts)),
-            "mean": float(np.mean(ts)),
-            "time_series_head": ts[:5].tolist(),
-            "time_series_tail": ts[-5:].tolist(),
-        }
-        out["_expected_time_series"] = ts
-    except Exception as exc:
-        out["extraction_notes"].append(f"expected_outcome: {exc}")
 
     try:
         effects = ana.incremental_outcome(aggregate_times=True, aggregate_geos=True, use_kpi=True)
@@ -232,12 +204,7 @@ def _extract_deliverables(ana, channels: list[str]) -> dict[str, Any]:
         out["extraction_notes"].append(f"summary_metrics: {exc}")
 
     try:
-        # Coarse response curve grid for PoC
-        rc = ana.response_curves(
-            spend_multipliers=[0.5, 0.75, 1.0, 1.25, 1.5],
-            use_kpi=True,
-        )
-        # Keep a compact preview, not the full posterior grid
+        rc = ana.response_curves(spend_multipliers=[0.5, 0.75, 1.0, 1.25, 1.5], use_kpi=True)
         preview = _xr_to_records(rc)
         if isinstance(preview, list) and len(preview) > 40:
             out["response_curves"] = {"n_rows": len(preview), "preview": preview[:20]}
@@ -246,12 +213,40 @@ def _extract_deliverables(ana, channels: list[str]) -> dict[str, Any]:
     except Exception as exc:
         out["extraction_notes"].append(f"response_curves: {exc}")
 
-    out["budget_optimization"] = {
-        "available_in_meridian": True,
-        "extracted_in_this_poc": False,
-        "note": "Use meridian.analysis.optimizer in a full Meridian workflow; skipped here for PoC runtime.",
-    }
     return out
+
+
+def _holdout_predictions_from_expected(
+    data: MMMDataset,
+    time_series: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Slice expected_outcome to the shared holdout weeks; return (y_true, y_pred)."""
+    if data.is_geo:
+        test_times = data.holdout_times
+        all_times = [str(t) for t in sorted(data.frame["time"].unique())]
+        actual = (
+            data.frame[data.frame["time"].astype(str).isin(test_times)]
+            .groupby(data.frame["time"].astype(str))[data.kpi_col]
+            .sum()
+            .reindex(test_times)
+            .to_numpy(dtype=float)
+        )
+        idx = [all_times.index(t) for t in test_times]
+        if max(idx) >= len(time_series):
+            raise ValueError("holdout time index out of range for Meridian expected_outcome")
+        pred = time_series[idx]
+        return actual, pred
+
+    if len(time_series) != len(data.frame):
+        raise ValueError(
+            f"Meridian expected_outcome length {len(time_series)} != n_times {len(data.frame)}"
+        )
+    mask = data.holdout_id.astype(bool)
+    if mask.ndim != 1 or len(mask) != len(data.frame):
+        raise ValueError(f"national holdout_id shape {mask.shape} incompatible with frame")
+    y_true = data.frame.loc[mask, data.kpi_col].to_numpy(dtype=float)
+    y_pred = time_series[mask]
+    return y_true, y_pred
 
 
 def _try_meridian(data: MMMDataset, *, n_keep: int = 50) -> ModelResult | None:
@@ -265,13 +260,12 @@ def _try_meridian(data: MMMDataset, *, n_keep: int = 50) -> ModelResult | None:
         return None
 
     if data.is_geo:
-        # Full 40×156 geo MCMC is too heavy for typical CPU PoC VMs.
         n_geos = int(data.frame["geo"].nunique()) if "geo" in data.frame.columns else 0
         n_times = int(data.frame["time"].nunique()) if "time" in data.frame.columns else 0
         if n_geos * n_times > 500:
             logger.warning(
                 "Skipping full geo Meridian fit (%s geos × %s times). "
-                "Use --dataset national (default) or --dataset geo-agg.",
+                "Use --dataset national (runtime default) or --dataset geo-agg.",
                 n_geos,
                 n_times,
             )
@@ -282,7 +276,9 @@ def _try_meridian(data: MMMDataset, *, n_keep: int = 50) -> ModelResult | None:
         prior = prior_distribution.PriorDistribution(
             roi_m=tfp.distributions.LogNormal(0.2, 0.9, name=constants.ROI_M)
         )
-        mmm = model.Meridian(input_data=input_data, model_spec=spec.ModelSpec(prior=prior))
+        # Same frozen holdout as TabFM: KPI on holdout weeks excluded from training.
+        model_spec = spec.ModelSpec(prior=prior, holdout_id=np.asarray(data.holdout_id))
+        mmm = model.Meridian(input_data=input_data, model_spec=model_spec)
         mmm.sample_prior(50)
         mmm.sample_posterior(
             n_chains=1,
@@ -294,41 +290,10 @@ def _try_meridian(data: MMMDataset, *, n_keep: int = 50) -> ModelResult | None:
         ana = analyzer.Analyzer(mmm)
         deliverables = _extract_deliverables(ana, channels)
 
-        ts = deliverables.pop("_expected_time_series", None)
-        if ts is None or len(ts) == 0:
-            logger.warning("Meridian expected_outcome unavailable; falling back")
-            return None
-
-        # Align holdout predictions to unique times for national; for geo panel,
-        # expected_outcome is national-aggregated over geos → compare to national KPI sum.
-        if data.is_geo:
-            test_times = sorted(data.frame.loc[data.test_idx, "time"].unique())
-            all_times = sorted(data.frame["time"].unique())
-            actual = (
-                data.frame[data.frame["time"].isin(test_times)]
-                .groupby("time")[data.kpi_col]
-                .sum()
-                .reindex(test_times)
-                .to_numpy(dtype=float)
-            )
-            idx = [all_times.index(t) for t in test_times]
-            if max(idx) >= len(ts):
-                logger.warning("Meridian geo time index out of range")
-                return None
-            pred = ts[idx]
-            metrics = regression_metrics(actual, pred)
-            y_pred = np.asarray(pred, dtype=float)
-        else:
-            if len(ts) != len(data.frame):
-                logger.warning("Meridian time length mismatch (%s vs %s)", len(ts), len(data.frame))
-                return None
-            pred = ts[np.asarray(data.test_idx)]
-            metrics = regression_metrics(data.y_test, pred)
-            y_pred = np.asarray(pred, dtype=float)
-
-        contrib = deliverables.get("channel_contribution") or {}
-        true_c = _true_holdout_contributions(data)
-        c_metrics = contribution_recovery_metrics(true_c, contrib) if true_c and contrib else {}
+        expected = ana.expected_outcome(aggregate_times=False, aggregate_geos=True, use_kpi=True)
+        ts = _posterior_mean(expected)
+        y_true, y_pred = _holdout_predictions_from_expected(data, ts)
+        metrics = regression_metrics(y_true, y_pred)
 
         if not data.is_geo:
             deliverables["geo_insights"] = {
@@ -342,20 +307,30 @@ def _try_meridian(data: MMMDataset, *, n_keep: int = 50) -> ModelResult | None:
                 "note": "Geo model fitted; detailed per-geo tables omitted in PoC payload.",
             }
 
+        remaining_asymmetry = (
+            "Shared holdout_id excludes holdout KPI from Meridian training (fair OOS KPI). "
+            "Remaining Meridian design asymmetry: holdout media still enters Adstock for "
+            "subsequent weeks (upstream Meridian behavior). TabFM never sees holdout rows "
+            "as ICL context. MCMC here is directional PoC (tiny chains), not decision-grade."
+        )
+
         return ModelResult(
             name="Meridian",
             mode="meridian",
-            y_pred_test=y_pred,
+            y_pred_test=np.asarray(y_pred, dtype=float),
             metrics=metrics,
-            contribution_pred={str(k): float(v) for k, v in contrib.items()},
-            contribution_metrics=c_metrics,
+            # Meridian product surface — shown in deliverable tables, not as TabFM peer contrib
+            contribution_pred={
+                str(k): float(v) for k, v in (deliverables.get("channel_contribution") or {}).items()
+            },
+            contribution_metrics={},
             extras={
                 "n_keep": n_keep,
                 "n_chains": 1,
-                "note": (
-                    "Minimal Meridian MCMC PoC. Holdout KPI uses in-sample expected_outcome "
-                    "on later weeks (fit on full series)."
-                ),
+                "holdout_times": data.holdout_times,
+                "eval": "oos_holdout_id",
+                "note": remaining_asymmetry,
+                "mcmc_quality": "directional_poc_not_decision_grade",
                 "deliverables": deliverables,
             },
         )
