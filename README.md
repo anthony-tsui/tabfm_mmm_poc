@@ -10,8 +10,8 @@
 👉 **[`docs/examples_for_planners.md`](docs/examples_for_planners.md)**  
 👉 Images: [`examples/01_meridian_annual_mix_story.png`](examples/01_meridian_annual_mix_story.png) · [`examples/02_tabfm_kpi_stops_here.png`](examples/02_tabfm_kpi_stops_here.png)
 
-On this simulated run: **Meridian says cut Channel3 / scale Channel2** (ROI ~53 vs ~104).  
-**TabFM only forecasts holdout KPI** and stops — no mix recommendation.
+On this simulated run: **Cut Channel3 15% / scale Channel2 — lowest ROI (~53) vs highest (~104). That’s an annual-mix call.**  
+**Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.**
 
 Checklist one-pager: [`docs/decisioning_checklist.md`](docs/decisioning_checklist.md)
 

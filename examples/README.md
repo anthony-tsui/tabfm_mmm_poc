@@ -2,20 +2,20 @@
 
 **One story, two images** — not a metrics dump.
 
-| # | File | Plain-language caption |
+| # | File | Caption |
 | --- | --- | --- |
-| 1 | [01_meridian_annual_mix_story.png](01_meridian_annual_mix_story.png) | Meridian says cut Channel3 / scale Channel2 — here’s why |
-| 2 | [02_tabfm_kpi_stops_here.png](02_tabfm_kpi_stops_here.png) | TabFM only says KPI might be X — it stops there |
+| 1 | [01_meridian_annual_mix_story.png](01_meridian_annual_mix_story.png) | Cut Channel3 15% / scale Channel2 — lowest ROI (~53) vs highest (~104). That’s an annual-mix call. |
+| 2 | [02_tabfm_kpi_stops_here.png](02_tabfm_kpi_stops_here.png) | Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here. |
 | 3 | [00_one_planner_story.png](00_one_planner_story.png) | Optional side-by-side scroll strip |
 
-Numbers for this dummy run: [`story_numbers.json`](story_numbers.json)
-
-Regenerate:
+Numbers: [`story_numbers.json`](story_numbers.json)
 
 ```bash
 python scripts/generate_planner_examples.py
+# Caption-only redraw from saved numbers (no Meridian refit):
+python scripts/generate_planner_examples.py --from-saved
 ```
 
-Read the story: [`../docs/examples_for_planners.md`](../docs/examples_for_planners.md)
+Story: [`../docs/examples_for_planners.md`](../docs/examples_for_planners.md)
 
 > Official Meridian simulated/demo data only. Not real campaign performance.

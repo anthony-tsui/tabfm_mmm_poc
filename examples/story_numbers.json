@@ -17,8 +17,8 @@
     "roi_cut": 52.94610424041748,
     "roi_scale": 104.31567494869232,
     "delta_incremental": 677002332.8280754,
-    "caption_meridian": "Meridian says: cut Channel3 by 15%, scale Channel2 \u2014 lowest vs highest ROI on this simulated run.",
-    "caption_tabfm": "TabFM only says what KPI might look like on holdout weeks. It stops there.",
+    "caption_meridian": "Cut Channel3 15% / scale Channel2 \u2014 lowest ROI (~53) vs highest (~104). That\u2019s an annual-mix call.",
+    "caption_tabfm": "Same data: KPI forecast only. No contribution, ROI, or cut/scale \u2014 planner stops here.",
     "roi": {
       "Channel0": 64.34853790998459,
       "Channel1": 87.25149550437928,
@@ -32,6 +32,20 @@
       "Channel2": 1260065545.6,
       "Channel3": 4651864688.0,
       "Channel4": 2651591260.8
+    },
+    "spend_before": {
+      "Channel0": 40501713.0799782,
+      "Channel1": 31320298.2023646,
+      "Channel2": 12079349.341539,
+      "Channel3": 87860358.24888599,
+      "Channel4": 47730683.477718174
+    },
+    "spend_after": {
+      "Channel0": 40501713.0799782,
+      "Channel1": 31320298.2023646,
+      "Channel2": 25258403.0788719,
+      "Channel3": 74681304.5115531,
+      "Channel4": 47730683.477718174
     }
   }
 }

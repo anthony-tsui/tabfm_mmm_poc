@@ -115,10 +115,13 @@ def _build_story(data, contrib: dict[str, float], roi: dict[str, float], cut_pct
         "after_incremental": after_inc,
         "delta_incremental": after_inc - before_inc,
         "caption_meridian": (
-            f"Meridian says: cut {cut_ch} by {cut_pct:.0%}, scale {scale_ch} — "
-            f"lowest vs highest ROI on this simulated run."
+            f"Cut {cut_ch} {cut_pct:.0%} / scale {scale_ch} — "
+            f"lowest ROI (~{roi[cut_ch]:.0f}) vs highest (~{roi[scale_ch]:.0f}). "
+            f"That’s an annual-mix call."
         ),
-        "caption_tabfm": "TabFM only says what KPI might look like on holdout weeks. It stops there.",
+        "caption_tabfm": (
+            "Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here."
+        ),
     }
     return story
 
@@ -175,11 +178,11 @@ def plot_meridian_story(story: dict) -> None:
     move_m = story["move_spend"] / 1e6
     delta_b = story["delta_incremental"] / 1e9
     caption = (
-        f"Meridian says: cut {cut_ch} / scale {scale_ch} — here’s why.\n"
-        f"{cut_ch} has the lowest ROI ({story['roi'][cut_ch]:.1f}); "
-        f"{scale_ch} has the highest ({story['roi'][scale_ch]:.1f}).\n"
-        f"Move ${move_m:.1f}M of simulated spend → illustrative incremental "
-        f"{'+' if delta_b >= 0 else ''}{delta_b:.2f}B (ROI×spend scenario, not full optimizer).\n"
+        f"Cut {cut_ch} {story['cut_pct']:.0%} / scale {scale_ch} — "
+        f"lowest ROI (~{story['roi'][cut_ch]:.0f}) vs highest (~{story['roi'][scale_ch]:.0f}). "
+        f"That’s an annual-mix call.\n"
+        f"(Moved ${move_m:.1f}M simulated spend; illustrative incremental "
+        f"{'+' if delta_b >= 0 else ''}{delta_b:.2f}B via ROI×spend scenario — not full optimizer.)\n"
         f"{DISCLAIMER}. {MCMC_NOTE}."
     )
     fig.text(0.02, 0.01, caption, fontsize=10, color="#24292f", va="bottom")
@@ -206,7 +209,7 @@ def plot_tabfm_story(data, y_pred: np.ndarray) -> None:
     ax0.plot(range(n), y_pred[:n] / 1e6, marker="s", ms=4, label="TabFM predicted KPI", color="#bf3989")
     ax0.set_xlabel("Holdout week")
     ax0.set_ylabel("KPI (millions, simulated)")
-    ax0.set_title("TabFM only says: KPI might look like this", loc="left")
+    ax0.set_title("Same data: KPI forecast only", loc="left")
     ax0.legend(fontsize=10)
 
     ax1 = fig.add_subplot(gs[1])
@@ -214,14 +217,14 @@ def plot_tabfm_story(data, y_pred: np.ndarray) -> None:
     ax1.set_ylim(0, 10)
     ax1.axis("off")
     ax1.add_patch(plt.Rectangle((0.3, 0.5), 9.4, 9.0, fill=True, color="#fff5f5", ec="#cf222e", lw=2.5))
-    ax1.text(5, 8.2, "TabFM stops here", ha="center", fontsize=20, fontweight="bold", color="#cf222e")
+    ax1.text(5, 8.2, "Planner stops here", ha="center", fontsize=20, fontweight="bold", color="#cf222e")
     ax1.text(
         5,
         5.5,
-        "No channel contribution\n"
-        "No channel ROI\n"
-        "No cut vs scale / annual mix rec\n"
-        "No budget floors or strategy plan",
+        "No contribution\n"
+        "No ROI\n"
+        "No cut / scale\n"
+        "No annual mix or strategy plan",
         ha="center",
         fontsize=13,
         color="#24292f",
@@ -238,7 +241,8 @@ def plot_tabfm_story(data, y_pred: np.ndarray) -> None:
     fig.text(
         0.02,
         0.01,
-        f"TabFM only says KPI might be X — it does not say cut A / scale B.\n{DISCLAIMER}.",
+        f"Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.\n"
+        f"{DISCLAIMER}.",
         fontsize=10,
         color="#24292f",
         va="bottom",
@@ -257,8 +261,8 @@ def plot_story_strip() -> None:
         axes,
         (p1, p2),
         (
-            "Meridian → annual mix answer (cut A / scale B)",
-            "TabFM → KPI forecast only (stops here)",
+            "Cut Channel3 15% / scale Channel2 — lowest ROI (~53) vs highest (~104). That’s an annual-mix call.",
+            "Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.",
         ),
     ):
         ax.imshow(plt.imread(path))
@@ -280,12 +284,24 @@ def main() -> int:
     tabfm = run_tabfm(data, dry_run=False)
     plot_tabfm_story(data, tabfm.y_pred_test)
 
-    try:
-        _channels, contrib, roi = _fit_meridian(data)
-        story = _build_story(data, contrib, roi)
-    except Exception as exc:
-        logger.warning("Meridian fit failed (%s) — cannot invent TabFM strategy; abort Meridian story", exc)
-        raise
+    saved = OUT / "story_numbers.json"
+    use_saved = "--from-saved" in sys.argv and saved.exists()
+    if use_saved:
+        prev = json.loads(saved.read_text())
+        contrib = prev["story"]["contrib"]
+        roi = prev["story"]["roi"]
+        story = _build_story(data, contrib, roi, cut_pct=float(prev["story"].get("cut_pct", 0.15)))
+        logger.info("Rebuilt story from %s (no Meridian refit)", saved)
+    else:
+        try:
+            _channels, contrib, roi = _fit_meridian(data)
+            story = _build_story(data, contrib, roi)
+        except Exception as exc:
+            logger.warning(
+                "Meridian fit failed (%s) — cannot invent TabFM strategy; abort Meridian story",
+                exc,
+            )
+            raise
 
     plot_meridian_story(story)
     plot_story_strip()
@@ -308,6 +324,8 @@ def main() -> int:
             "caption_tabfm": story["caption_tabfm"],
             "roi": story["roi"],
             "contrib": story["contrib"],
+            "spend_before": story["spend_before"],
+            "spend_after": story["spend_after"],
         },
     }
     (OUT / "story_numbers.json").write_text(json.dumps(payload, indent=2))
