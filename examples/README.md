@@ -1,4 +1,4 @@
-# Planner examples (phone-first)
+# Planner examples (visual story)
 
 **One story, two images** — not a metrics dump.
 

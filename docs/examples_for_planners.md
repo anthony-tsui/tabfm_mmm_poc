@@ -2,7 +2,7 @@
 
 **Short answer: No.** TabFM can forecast KPI. Meridian can recommend a mix.
 
-Open these images on your phone (same simulated Meridian demo data):
+Open these images (same simulated Meridian demo data):
 
 1. [Meridian annual mix story](../examples/01_meridian_annual_mix_story.png)  
 2. [TabFM KPI + planner stops here](../examples/02_tabfm_kpi_stops_here.png)  
@@ -59,4 +59,4 @@ TabFM draws a holdout KPI line (actual vs predicted). That is all.
 - **TabFM** is **not** an MMM alternative for that job unless you add another causal/MMM layer.
 - We do **not** fake TabFM budget recs. We do **not** use SHAP/ablation as “contribution.”
 
-Checklist one-pager: [`decisioning_checklist.md`](decisioning_checklist.md)
+Decisioning checklist: [`decisioning_checklist.md`](decisioning_checklist.md)

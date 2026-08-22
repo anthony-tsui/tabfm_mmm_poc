@@ -2,7 +2,7 @@
 
 > **TabFM predicts KPI; it does not replace Meridian for contribution / ROI / curves / budget opt.**
 
-## Start here (phone)
+## Start here — visual examples for marketers
 
 **Can TabFM be an MMM alternative for annual marketing budget & strategy?**  
 → **No.** See the worked example:
@@ -14,7 +14,7 @@
 On this simulated run: **Cut Channel3 15% / scale Channel2 — lowest ROI (~53) vs highest (~104). That’s an annual-mix call.**  
 **Same data: KPI forecast only. No contribution, ROI, or cut/scale — planner stops here.**
 
-Checklist one-pager: [`docs/decisioning_checklist.md`](docs/decisioning_checklist.md)
+Decisioning checklist: [`docs/decisioning_checklist.md`](docs/decisioning_checklist.md)
 
 > **Simulated / demo data only.** Tiny MCMC is **directional / not decision-grade**. We do not fake TabFM budget advice.
 
@@ -31,7 +31,7 @@ An honest gap analysis on official Meridian simulated CSVs: one frozen national 
 ```bash
 bash scripts/install_deps.sh
 INSTALL_MERIDIAN=1 bash scripts/install_deps.sh
-python scripts/generate_planner_examples.py   # rebuild phone PNGs
+python scripts/generate_planner_examples.py   # rebuild planner example PNGs
 python scripts/run_comparison.py --dry-run    # optional technical path
 ```
 

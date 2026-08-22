@@ -1,4 +1,4 @@
-# Decisioning checklist (phone one-pager)
+# Decisioning checklist (quick look)
 
 **Bar:** Can this support **annual marketing budget + strategy recommendations**?
 
