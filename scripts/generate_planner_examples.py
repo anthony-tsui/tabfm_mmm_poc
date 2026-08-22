@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ONE planner story on official Meridian simulated data — phone-readable PNGs.
+"""ONE planner story on official Meridian simulated data — visual example PNGs.
 
 Story:
   Meridian: contribution + ROI → “cut Channel A X% / scale Channel B” annual mix.
@@ -127,7 +127,7 @@ def _build_story(data, contrib: dict[str, float], roi: dict[str, float], cut_pct
 
 
 def plot_meridian_story(story: dict) -> None:
-    """Single phone-readable image: contribution + ROI → cut A / scale B with numbers."""
+    """Single visual story image: contribution + ROI → cut A / scale B with numbers."""
     channels = list(story["roi"].keys())
     cut_ch, scale_ch = story["cut_channel"], story["scale_channel"]
     contrib = np.array([story["contrib"][c] for c in channels], dtype=float)
@@ -191,7 +191,7 @@ def plot_meridian_story(story: dict) -> None:
 
 
 def plot_tabfm_story(data, y_pred: np.ndarray) -> None:
-    """KPI forecast + explicit stops-here panel — one phone image."""
+    """KPI forecast + explicit stops-here panel — one story image."""
     y_true = data.y_test.to_numpy(dtype=float)
     n = min(len(y_true), len(y_pred), 52)
 
@@ -252,7 +252,7 @@ def plot_tabfm_story(data, y_pred: np.ndarray) -> None:
 
 
 def plot_story_strip() -> None:
-    """Optional third image: two-panel strip for quick phone scroll."""
+    """Optional third image: two-panel strip for a quick scroll."""
     p1, p2 = OUT / "01_meridian_annual_mix_story.png", OUT / "02_tabfm_kpi_stops_here.png"
     if not (p1.exists() and p2.exists()):
         return
