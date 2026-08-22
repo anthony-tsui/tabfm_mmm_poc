@@ -2,6 +2,9 @@
 
 > **TabFM predicts KPI; it does not replace Meridian for contribution / ROI / curves / budget opt.**
 
+Phone one-pager for annual budget / strategy planners:
+[`docs/decisioning_checklist.md`](docs/decisioning_checklist.md).
+
 That is the practitioner framing for this repo: predictive fit ≠ media decisioning.
 This is an **honest gap analysis** on official Meridian simulated/demo data — not a
 bake-off framed to crown a winner.
