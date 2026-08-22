@@ -1,0 +1,24 @@
+# Core (pinned-ish for PoC reproducibility)
+numpy>=1.26,<3
+pandas>=2.1,<3
+scikit-learn>=1.4,<2
+matplotlib>=3.8,<4
+jupyter>=1.0,<2
+ipykernel>=6.29,<7
+tqdm>=4.66,<5
+
+# Hugging Face (TabFM weight download)
+huggingface_hub>=0.24,<1
+hf_transfer>=0.1,<1
+safetensors>=0.4,<1
+
+# PyTorch CPU wheel — install from pytorch index if needed:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch>=2.2,<3
+
+# TabFM: install from source after cloning, e.g.
+#   pip install -e "git+https://github.com/google-research/tabfm.git#egg=tabfm[pytorch]"
+# Declared here as a comment; the install script / README clones it.
+
+# Optional full Meridian Bayesian MMM (heavy; CPU MCMC is slow)
+# google-meridian>=1.0
