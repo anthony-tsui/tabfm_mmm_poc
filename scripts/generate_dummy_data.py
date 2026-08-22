@@ -154,7 +154,7 @@ def generate(seed: int = SEED) -> pd.DataFrame:
 
 
 def main() -> None:
-    out = Path(__file__).resolve().parents[1] / "data" / "hk_skincare_mmm_dummy.csv"
+    out = Path(__file__).resolve().parents[1] / "data" / "legacy" / "hk_skincare_mmm_dummy.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     df = generate()
     df.to_csv(out, index=False)

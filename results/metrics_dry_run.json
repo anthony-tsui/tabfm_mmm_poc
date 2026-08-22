@@ -1,51 +1,40 @@
 {
-  "disclaimer": "All values are synthetic/dummy. Metrics do not estimate real campaign performance.",
+  "disclaimer": "Official Meridian simulated/demo data (and any legacy dummy data) only. Metrics and Meridian artifacts are not estimates of real campaign performance.",
   "data": {
-    "path": "/workspace/data/hk_skincare_mmm_dummy.csv",
-    "n_rows": 12,
-    "kpi": "revenue",
-    "train_idx": [
-      0,
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7
-    ],
-    "test_idx": [
-      8,
-      9,
-      10,
-      11
-    ],
+    "dataset": "national",
+    "preferred_official": "geo",
+    "runtime_default": "national",
+    "path": "/workspace/data/official/national_all_channels.csv",
+    "n_rows": 156,
+    "is_geo": false,
+    "kpi": "conversions",
+    "n_train": 100,
+    "n_test": 52,
     "feature_cols": [
-      "google_sem_spend",
-      "google_sem_impression",
-      "bing_sem_spend",
-      "bing_sem_impression",
-      "meta_spend",
-      "meta_impression",
-      "youtube_spend",
-      "youtube_impression",
-      "dv360_spend",
-      "dv360_impression",
-      "ooh_spend",
-      "ooh_impression",
-      "promo_control",
-      "competitor_activity_score_control",
-      "sentiment_score_control"
+      "Channel0_spend",
+      "Channel0_impression",
+      "Channel1_spend",
+      "Channel1_impression",
+      "Channel2_spend",
+      "Channel2_impression",
+      "Channel3_spend",
+      "Channel3_impression",
+      "Channel4_spend",
+      "Channel4_impression",
+      "Organic_channel0_impression",
+      "competitor_sales_control",
+      "sentiment_score_control",
+      "Promo"
     ],
     "channel_keys": [
-      "google_sem",
-      "bing_sem",
-      "meta",
-      "youtube",
-      "dv360",
-      "ooh"
+      "Channel0",
+      "Channel1",
+      "Channel2",
+      "Channel3",
+      "Channel4"
     ],
-    "has_contribution_ground_truth": true
+    "has_contribution_ground_truth": false,
+    "notes": "national weekly series; truncated train context to last 100 rows"
   },
   "dry_run": true,
   "models": {
@@ -53,74 +42,196 @@
       "name": "TabFM",
       "mode": "mock",
       "y_pred_test": [
-        917177.8693898702,
-        944185.9011250493,
-        977800.7143922225,
-        888016.3425119756
+        413783522.32787824,
+        410263259.0277347,
+        422873374.19020694,
+        423241468.3656184,
+        411970775.0542579,
+        448947445.1464603,
+        408686175.37038314,
+        430246095.91609085,
+        443065938.9956802,
+        433649366.4159992,
+        451694499.9973012,
+        436751470.5344918,
+        444514740.8854008,
+        423620082.1395329,
+        401777784.6659342,
+        428780306.0418371,
+        439955385.2711986,
+        437563932.5010303,
+        440338090.9446268,
+        427970680.8485631,
+        418195645.73752314,
+        432948565.0410396,
+        424311972.2921634,
+        410864908.4899526,
+        421267812.5716992,
+        416815376.58608645,
+        416426428.98543847,
+        403829543.730887,
+        433309443.7347869,
+        445762463.1256279,
+        392669733.6392114,
+        440393546.18071127,
+        419632936.7659442,
+        404848583.89050037,
+        429049020.0257645,
+        398319181.8901975,
+        423316894.6682821,
+        440962738.9275916,
+        402455334.2202881,
+        417889156.4588729,
+        419847850.87931824,
+        424021637.9023107,
+        434017136.3498745,
+        414198235.1644392,
+        417146701.7578233,
+        425284182.5956222,
+        455180374.0599209,
+        417361174.22084796,
+        421505337.40818095,
+        413434429.1299265,
+        423776412.5378071,
+        419898866.8350843
       ],
       "metrics": {
-        "rmse": 90347.86969327887,
-        "mae": 77166.92064522061,
-        "r2": -27.20333161398104,
-        "mape_pct": 7.581610363626441
+        "rmse": 24777139.494763356,
+        "mae": 18285499.185481712,
+        "r2": 0.1857041714956098,
+        "mape_pct": 4.287913340696877
       },
       "contribution_pred": {
-        "google_sem": 0.0,
-        "bing_sem": 149313.74393414892,
-        "meta": 321134.3922675712,
-        "youtube": 0.0,
-        "dv360": 139486.5558546872,
-        "ooh": 0.0
+        "Channel0": 2826912.923022471,
+        "Channel1": 3235550.787432633,
+        "Channel2": 1676485.4465434724,
+        "Channel3": 26609850.593995597,
+        "Channel4": 13808178.623514155
       },
-      "contribution_metrics": {
-        "contrib_mae": 129207.75534273453,
-        "contrib_share_mae": 0.2148102259882331,
-        "contrib_corr": -0.24024566064049613,
-        "contrib_share_corr": -0.2402456606404962
-      },
+      "contribution_metrics": {},
       "extras": {
-        "note": "Dry-run mock (Ridge). TabFM weights not used."
+        "note": "Dry-run mock (Ridge). TabFM weights not used.",
+        "deliverables": {
+          "expected_outcome": "holdout KPI predictions via TabFMRegressor (predictive only)",
+          "channel_contribution": {
+            "method": "leave-one-channel ablation (hacky proxy)",
+            "values": {
+              "Channel0": 2826912.923022471,
+              "Channel1": 3235550.787432633,
+              "Channel2": 1676485.4465434724,
+              "Channel3": 26609850.593995597,
+              "Channel4": 13808178.623514155
+            },
+            "meridian_equivalent": false
+          },
+          "roi_by_channel": null,
+          "response_curves": null,
+          "budget_optimization": null,
+          "geo_insights": "Row-level geo-week prediction possible if geo panel features are supplied; no Meridian hierarchical geo posteriors.",
+          "honesty": "TabFM is a tabular ICL regressor, not an MMM. Only predictive KPI is a Yes; other Meridian deliverables are Partial/No \u2014 see deliverables matrix."
+        }
       }
     },
     "meridian": {
       "name": "Meridian-style baseline",
       "mode": "meridian_style",
       "y_pred_test": [
-        1021242.7146608958,
-        992772.22449213,
-        984595.6395833453,
-        1032264.9098017325
+        405396200.6911339,
+        408919568.6499211,
+        432020339.3955241,
+        429716770.58301246,
+        414157394.22146946,
+        447119116.11782616,
+        409516479.8701189,
+        424693038.2419363,
+        438805575.7400587,
+        420619372.1254103,
+        439752094.72051305,
+        439727146.77580756,
+        432067872.25211394,
+        422963520.566149,
+        405073680.2790116,
+        424021747.00734127,
+        440250504.06823176,
+        430025367.8822724,
+        433584992.01307976,
+        427456300.2395151,
+        427929458.6869502,
+        431853559.255299,
+        423980103.92819965,
+        416339516.21589404,
+        428805898.3577814,
+        414882296.91339207,
+        424871191.87274927,
+        412915083.6174834,
+        432950536.5924335,
+        449589652.5130496,
+        400443350.50426835,
+        429999386.8740218,
+        414292422.01279473,
+        404999952.03875625,
+        429511624.9620413,
+        394940825.43110275,
+        421816255.8108447,
+        432197098.47853535,
+        417102258.02253866,
+        421278890.1962348,
+        427679614.2608263,
+        433959079.8331948,
+        433664595.38670087,
+        422598317.49778974,
+        418237869.72484416,
+        420777926.05018973,
+        447155932.0694852,
+        425988620.9126598,
+        425533135.5014198,
+        413913652.6039436,
+        425520226.3581472,
+        423322272.0071203
       ],
       "metrics": {
-        "rmse": 11587.049942059746,
-        "mae": 10217.82526634037,
-        "r2": 0.5361149910836476,
-        "mape_pct": 1.0064692353940068
+        "rmse": 22851911.89175352,
+        "mae": 17780451.181976464,
+        "r2": 0.307332262338042,
+        "mape_pct": 4.169672398184584
       },
       "contribution_pred": {
-        "google_sem": 9448.55279420064,
-        "bing_sem": 13807.664530999948,
-        "meta": 14226.168380900152,
-        "youtube": 8986.776269662769,
-        "dv360": 7308.35742336977,
-        "ooh": 5417.8626923921565
+        "Channel0": 5342781.253177097,
+        "Channel1": 4517677.034873548,
+        "Channel2": 1530469.779409116,
+        "Channel3": 7294437.863870536,
+        "Channel4": 6935712.3589317985
       },
-      "contribution_metrics": {
-        "contrib_mae": 85515.40881807909,
-        "contrib_share_mae": 0.08347470366661384,
-        "contrib_corr": 0.02771970077080289,
-        "contrib_share_corr": 0.027719700770802914
-      },
+      "contribution_metrics": {},
       "extras": {
-        "note": "Proxy: geometric adstock + Hill saturation + Ridge. Not full Google Meridian Bayesian MCMC.",
+        "note": "Proxy: geometric adstock + Hill saturation + Ridge. Not full Google Meridian Bayesian MCMC. Proxy ROI is NOT Meridian ROI.",
         "media_cols": [
-          "google_sem_media_transform",
-          "bing_sem_media_transform",
-          "meta_media_transform",
-          "youtube_media_transform",
-          "dv360_media_transform",
-          "ooh_media_transform"
+          "Channel0_media_transform",
+          "Channel1_media_transform",
+          "Channel2_media_transform",
+          "Channel3_media_transform",
+          "Channel4_media_transform"
         ],
+        "deliverables": {
+          "expected_outcome": "proxy holdout predictions only",
+          "channel_contribution": {
+            "Channel0": 5342781.253177097,
+            "Channel1": 4517677.034873548,
+            "Channel2": 1530469.779409116,
+            "Channel3": 7294437.863870536,
+            "Channel4": 6935712.3589317985
+          },
+          "roi_by_channel_proxy": {
+            "Channel0": 19.85095326799813,
+            "Channel1": 23.70523531815881,
+            "Channel2": 19.214127751355495,
+            "Channel3": 13.554227382298324,
+            "Channel4": 23.409448608007377
+          },
+          "response_curves": null,
+          "budget_optimization": null,
+          "geo_insights": null
+        },
         "dry_run": true
       }
     }
@@ -129,26 +240,145 @@
     {
       "model": "TabFM",
       "mode": "mock",
-      "kpi_rmse": 90347.86969327887,
-      "kpi_mae": 77166.92064522061,
-      "kpi_r2": -27.20333161398104,
-      "kpi_mape_pct": 7.581610363626441,
-      "recovery_contrib_mae": 129207.75534273453,
-      "recovery_contrib_share_mae": 0.2148102259882331,
-      "recovery_contrib_corr": -0.24024566064049613,
-      "recovery_contrib_share_corr": -0.2402456606404962
+      "kpi_rmse": 24777139.494763356,
+      "kpi_mae": 18285499.185481712,
+      "kpi_r2": 0.1857041714956098,
+      "kpi_mape_pct": 4.287913340696877
     },
     {
       "model": "Meridian-style baseline",
       "mode": "meridian_style",
-      "kpi_rmse": 11587.049942059746,
-      "kpi_mae": 10217.82526634037,
-      "kpi_r2": 0.5361149910836476,
-      "kpi_mape_pct": 1.0064692353940068,
-      "recovery_contrib_mae": 85515.40881807909,
-      "recovery_contrib_share_mae": 0.08347470366661384,
-      "recovery_contrib_corr": 0.02771970077080289,
-      "recovery_contrib_share_corr": 0.027719700770802914
+      "kpi_rmse": 22851911.89175352,
+      "kpi_mae": 17780451.181976464,
+      "kpi_r2": 0.307332262338042,
+      "kpi_mape_pct": 4.169672398184584
     }
-  ]
+  ],
+  "deliverables_matrix": [
+    {
+      "meridian_deliverable": "Expected outcome / predictive fit",
+      "how_meridian_produces_it": "Analyzer.expected_outcome / predictive_accuracy \u2014 Bayesian posterior expected KPI given media, controls, and model structure (adstock, Hill, etc.).",
+      "tabfm_equivalent": "Yes",
+      "tabfm_notes": "TabFMRegressor can predict a continuous KPI from tabular media/control features via ICL. Comparable only as a predictive score (RMSE/MAE/R\u00b2), not as a structural MMM fit."
+    },
+    {
+      "meridian_deliverable": "Channel contribution (incremental outcome)",
+      "how_meridian_produces_it": "Analyzer.incremental_outcome \u2014 counterfactual E(Y|treatment) \u2212 E(Y|no treatment) under the fitted Bayesian MMM.",
+      "tabfm_equivalent": "Partial",
+      "tabfm_notes": "No native incremental contribution. Optional leave-one-channel ablation on predictions is a hacky sensitivity proxy \u2014 NOT Meridian-equivalent and not causal."
+    },
+    {
+      "meridian_deliverable": "ROI / effectiveness by channel",
+      "how_meridian_produces_it": "Analyzer.roi / summary_metrics \u2014 incremental outcome \u00f7 spend with posterior uncertainty.",
+      "tabfm_equivalent": "No",
+      "tabfm_notes": "TabFM has no spend\u2192outcome structural ROI. Dividing ablation deltas by spend would be misleading and is not implemented as a Meridian-equivalent deliverable."
+    },
+    {
+      "meridian_deliverable": "Response curves (diminishing returns)",
+      "how_meridian_produces_it": "Analyzer.response_curves \u2014 Hill/saturation response under historical flighting with spend multipliers.",
+      "tabfm_equivalent": "No",
+      "tabfm_notes": "Zero-shot tabular regression has no adstock/Hill media transform or native response-curve API."
+    },
+    {
+      "meridian_deliverable": "Budget optimization / scenario planning",
+      "how_meridian_produces_it": "meridian.analysis.optimizer \u2014 allocate budget under response curves / ROI constraints.",
+      "tabfm_equivalent": "No",
+      "tabfm_notes": "No optimizer. Any grid-search over TabFM predictions would be an ad-hoc experiment, not Meridian budget optimization."
+    },
+    {
+      "meridian_deliverable": "Geo-level insights",
+      "how_meridian_produces_it": "Geo hierarchical Meridian model + Analyzer with selected_geos / geo aggregation flags.",
+      "tabfm_equivalent": "Partial",
+      "tabfm_notes": "TabFM can take geo-week rows as tabular features and predict KPI per row, but it does not provide hierarchical geo shrinkage, geo ROI, or Meridian geo posteriors."
+    }
+  ],
+  "deliverables_capability_summary": {
+    "counts": {
+      "Yes": 1,
+      "Partial": 2,
+      "No": 3
+    },
+    "headline": "TabFM can match Meridian on predictive KPI scoring only. Contribution/ROI/response curves/budget optimization are MMM-structural and are not native TabFM deliverables.",
+    "rows": [
+      {
+        "meridian_deliverable": "Expected outcome / predictive fit",
+        "how_meridian_produces_it": "Analyzer.expected_outcome / predictive_accuracy \u2014 Bayesian posterior expected KPI given media, controls, and model structure (adstock, Hill, etc.).",
+        "tabfm_equivalent": "Yes",
+        "tabfm_notes": "TabFMRegressor can predict a continuous KPI from tabular media/control features via ICL. Comparable only as a predictive score (RMSE/MAE/R\u00b2), not as a structural MMM fit."
+      },
+      {
+        "meridian_deliverable": "Channel contribution (incremental outcome)",
+        "how_meridian_produces_it": "Analyzer.incremental_outcome \u2014 counterfactual E(Y|treatment) \u2212 E(Y|no treatment) under the fitted Bayesian MMM.",
+        "tabfm_equivalent": "Partial",
+        "tabfm_notes": "No native incremental contribution. Optional leave-one-channel ablation on predictions is a hacky sensitivity proxy \u2014 NOT Meridian-equivalent and not causal."
+      },
+      {
+        "meridian_deliverable": "ROI / effectiveness by channel",
+        "how_meridian_produces_it": "Analyzer.roi / summary_metrics \u2014 incremental outcome \u00f7 spend with posterior uncertainty.",
+        "tabfm_equivalent": "No",
+        "tabfm_notes": "TabFM has no spend\u2192outcome structural ROI. Dividing ablation deltas by spend would be misleading and is not implemented as a Meridian-equivalent deliverable."
+      },
+      {
+        "meridian_deliverable": "Response curves (diminishing returns)",
+        "how_meridian_produces_it": "Analyzer.response_curves \u2014 Hill/saturation response under historical flighting with spend multipliers.",
+        "tabfm_equivalent": "No",
+        "tabfm_notes": "Zero-shot tabular regression has no adstock/Hill media transform or native response-curve API."
+      },
+      {
+        "meridian_deliverable": "Budget optimization / scenario planning",
+        "how_meridian_produces_it": "meridian.analysis.optimizer \u2014 allocate budget under response curves / ROI constraints.",
+        "tabfm_equivalent": "No",
+        "tabfm_notes": "No optimizer. Any grid-search over TabFM predictions would be an ad-hoc experiment, not Meridian budget optimization."
+      },
+      {
+        "meridian_deliverable": "Geo-level insights",
+        "how_meridian_produces_it": "Geo hierarchical Meridian model + Analyzer with selected_geos / geo aggregation flags.",
+        "tabfm_equivalent": "Partial",
+        "tabfm_notes": "TabFM can take geo-week rows as tabular features and predict KPI per row, but it does not provide hierarchical geo shrinkage, geo ROI, or Meridian geo posteriors."
+      }
+    ]
+  },
+  "deliverable_tables": {
+    "meridian": {
+      "mode": "meridian_style",
+      "predictive_accuracy": null,
+      "channel_contribution": {
+        "Channel0": 5342781.253177097,
+        "Channel1": 4517677.034873548,
+        "Channel2": 1530469.779409116,
+        "Channel3": 7294437.863870536,
+        "Channel4": 6935712.3589317985
+      },
+      "roi_by_channel": {
+        "Channel0": 19.85095326799813,
+        "Channel1": 23.70523531815881,
+        "Channel2": 19.214127751355495,
+        "Channel3": 13.554227382298324,
+        "Channel4": 23.409448608007377
+      },
+      "summary_metrics_preview": null,
+      "response_curves": null,
+      "budget_optimization": null,
+      "geo_insights": null,
+      "extraction_notes": null
+    },
+    "tabfm": {
+      "mode": "mock",
+      "channel_contribution_ablation_proxy": {
+        "method": "leave-one-channel ablation (hacky proxy)",
+        "values": {
+          "Channel0": 2826912.923022471,
+          "Channel1": 3235550.787432633,
+          "Channel2": 1676485.4465434724,
+          "Channel3": 26609850.593995597,
+          "Channel4": 13808178.623514155
+        },
+        "meridian_equivalent": false
+      },
+      "roi_by_channel": null,
+      "response_curves": null,
+      "budget_optimization": null,
+      "honesty": "TabFM is a tabular ICL regressor, not an MMM. Only predictive KPI is a Yes; other Meridian deliverables are Partial/No \u2014 see deliverables matrix."
+    }
+  }
 }

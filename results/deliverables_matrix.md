@@ -1,0 +1,12 @@
+# Meridian vs TabFM deliverables
+
+TabFM can match Meridian on predictive KPI scoring only. Contribution/ROI/response curves/budget optimization are MMM-structural and are not native TabFM deliverables.
+
+| Meridian deliverable | How Meridian produces it | TabFM equivalent? | If Partial / notes |
+| --- | --- | --- | --- |
+| Expected outcome / predictive fit | Analyzer.expected_outcome / predictive_accuracy — Bayesian posterior expected KPI given media, controls, and model structure (adstock, Hill, etc.). | **Yes** | TabFMRegressor can predict a continuous KPI from tabular media/control features via ICL. Comparable only as a predictive score (RMSE/MAE/R²), not as a structural MMM fit. |
+| Channel contribution (incremental outcome) | Analyzer.incremental_outcome — counterfactual E(Y|treatment) − E(Y|no treatment) under the fitted Bayesian MMM. | **Partial** | No native incremental contribution. Optional leave-one-channel ablation on predictions is a hacky sensitivity proxy — NOT Meridian-equivalent and not causal. |
+| ROI / effectiveness by channel | Analyzer.roi / summary_metrics — incremental outcome ÷ spend with posterior uncertainty. | **No** | TabFM has no spend→outcome structural ROI. Dividing ablation deltas by spend would be misleading and is not implemented as a Meridian-equivalent deliverable. |
+| Response curves (diminishing returns) | Analyzer.response_curves — Hill/saturation response under historical flighting with spend multipliers. | **No** | Zero-shot tabular regression has no adstock/Hill media transform or native response-curve API. |
+| Budget optimization / scenario planning | meridian.analysis.optimizer — allocate budget under response curves / ROI constraints. | **No** | No optimizer. Any grid-search over TabFM predictions would be an ad-hoc experiment, not Meridian budget optimization. |
+| Geo-level insights | Geo hierarchical Meridian model + Analyzer with selected_geos / geo aggregation flags. | **Partial** | TabFM can take geo-week rows as tabular features and predict KPI per row, but it does not provide hierarchical geo shrinkage, geo ROI, or Meridian geo posteriors. |

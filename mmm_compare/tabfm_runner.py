@@ -54,6 +54,28 @@ def _true_holdout_contributions(data: MMMDataset) -> dict[str, float]:
     return out
 
 
+def _tabfm_deliverables(contrib: dict[str, float]) -> dict[str, Any]:
+    return {
+        "expected_outcome": "holdout KPI predictions via TabFMRegressor (predictive only)",
+        "channel_contribution": {
+            "method": "leave-one-channel ablation (hacky proxy)",
+            "values": contrib,
+            "meridian_equivalent": False,
+        },
+        "roi_by_channel": None,
+        "response_curves": None,
+        "budget_optimization": None,
+        "geo_insights": (
+            "Row-level geo-week prediction possible if geo panel features are supplied; "
+            "no Meridian hierarchical geo posteriors."
+        ),
+        "honesty": (
+            "TabFM is a tabular ICL regressor, not an MMM. Only predictive KPI is a Yes; "
+            "other Meridian deliverables are Partial/No — see deliverables matrix."
+        ),
+    }
+
+
 def _mock_tabfm(data: MMMDataset) -> ModelResult:
     """Ridge on context rows — preserves metrics schema when TabFM weights are unavailable."""
     model = Ridge(alpha=1.0)
@@ -70,7 +92,10 @@ def _mock_tabfm(data: MMMDataset) -> ModelResult:
         metrics=metrics,
         contribution_pred=contrib,
         contribution_metrics=c_metrics,
-        extras={"note": "Dry-run mock (Ridge). TabFM weights not used."},
+        extras={
+            "note": "Dry-run mock (Ridge). TabFM weights not used.",
+            "deliverables": _tabfm_deliverables(contrib),
+        },
     )
 
 
@@ -104,7 +129,11 @@ def run_tabfm(data: MMMDataset, *, dry_run: bool = False, force_mock: bool = Fal
             metrics=metrics,
             contribution_pred=contrib,
             contribution_metrics=c_metrics,
-            extras={"backend": "pytorch", "weights": "google/tabfm-1.0.0-pytorch"},
+            extras={
+                "backend": "pytorch",
+                "weights": "google/tabfm-1.0.0-pytorch",
+                "deliverables": _tabfm_deliverables(contrib),
+            },
         )
     except Exception as exc:  # pragma: no cover - weights / runtime
         logger.warning("TabFM inference failed (%s); falling back to mock", exc)

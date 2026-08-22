@@ -1,16 +1,10 @@
 # Results
 
-`metrics.json` / `metrics.csv` are from a successful cloud-agent run with:
+- `metrics.json` / `metrics.csv` — predictive holdout comparison (real or last successful run)
+- `metrics_dry_run.*` — mock TabFM + Meridian-style proxy
+- `deliverables_matrix.md` / `.csv` — honest Meridian vs TabFM capability matrix
 
-- **TabFM** mode `tabfm` (PyTorch weights `google/tabfm-1.0.0-pytorch`)
-- **Meridian** mode `meridian` (google-meridian 1.8.0, minimal MCMC)
+Default dataset for runs: official `national_all_channels.csv` (CPU-friendly).
+Preferred Getting Started file `geo_all_channels.csv` is vendored under `data/official/`.
 
-All numbers are on **synthetic** `data/hk_skincare_mmm_dummy.csv` only.
-
-Re-run locally:
-
-```bash
-python scripts/run_comparison.py -v
-# or
-python scripts/run_comparison.py --dry-run
-```
+All numbers are on **simulated/demo** data only.
