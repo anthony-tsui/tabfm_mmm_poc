@@ -91,8 +91,9 @@ def run_comparison(
     if results_dir is not None:
         out = Path(results_dir)
         out.mkdir(parents=True, exist_ok=True)
-        json_path = out / "metrics.json"
-        csv_path = out / "metrics.csv"
+        stem = "metrics_dry_run" if dry_run else "metrics"
+        json_path = out / f"{stem}.json"
+        csv_path = out / f"{stem}.csv"
         json_path.write_text(json.dumps(payload, indent=2))
         table.to_csv(csv_path)
         logger.info("Wrote %s and %s", json_path, csv_path)
