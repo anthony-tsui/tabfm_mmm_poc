@@ -1,15 +1,19 @@
 # TabFM vs Meridian — honest gap analysis (official demo data)
 
-**Practitioner takeaway: predictive fit ≠ media decisioning.**
+> **TabFM predicts KPI; it does not replace Meridian for contribution / ROI / curves / budget opt.**
 
-This PoC asks whether Google Research **TabFM** (tabular ICL regressor) can produce
-the same **actionable Meridian deliverables** marketers use for media decisions.
-It is an **honest gap analysis**, not a bake-off framed to crown a winner.
+That is the practitioner framing for this repo: predictive fit ≠ media decisioning.
+This is an **honest gap analysis** on official Meridian simulated/demo data — not a
+bake-off framed to crown a winner.
 
 > **Simulated / demo data only.** Official Meridian CSVs here are not estimates of
 > real campaign performance. Tiny MCMC runs are **directional / not decision-grade**.
 
-## Headline
+## Fair OOS predictive metrics (after the framing above)
+
+Both models use the **same frozen input table** and the **same later-week holdout**.
+Headline comparison is holdout KPI only (RMSE / MAE / R² / MAPE). See
+`results/metrics.json` for the latest fair OOS numbers.
 
 | Question | Answer |
 | --- | --- |
@@ -19,7 +23,7 @@ It is an **honest gap analysis**, not a bake-off framed to crown a winner.
 Optional `--ablation-proxy` for TabFM is a sensitivity hack — **not** Meridian-equivalent,
 **not** causal, and **excluded** from the headline metrics table.
 
-## Fair predictive evaluation
+## Fair predictive evaluation (how the OOS numbers are produced)
 
 Both models use the **same frozen input table** and the **same later-week holdout**:
 
